@@ -4,34 +4,26 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/Kount/pq-timeouts"
+	log "github.com/sirupsen/logrus"
+	config "meli/pkg/config"
 )
 
 type Postgres struct {
-	client  *sql.DB
-	address string
+	client *sql.DB
+	config config.Config
 }
 
-func NewPostgres(address string) Postgres {
-	client, err := buildClient(address)
+func NewPostgres(config config.Config) Postgres {
+	client, err := buildClient(config.Postgres.ItemsConnection)
 	if err != nil {
 		panic(fmt.Sprintf("Error connecting to DB: %s", err.Error()))
+	} else {
+		log.Info("Connected to postgres server")
 	}
 
 	return Postgres{
-		client:  client,
-		address: address,
-	}
-}
-
-func (p *Postgres) Client() Postgres {
-	client, err := buildClient(p.address)
-	if err != nil {
-		panic(fmt.Sprintf("Error connecting to DB: %s", err.Error()))
-	}
-
-	return Postgres{
-		client:  client,
-		address: p.address,
+		client: client,
+		config: config,
 	}
 }
 
