@@ -1,0 +1,12 @@
+FROM golang:1.14
+
+ARG LIB_MIGRATE_VERSION=v4.10.0
+ARG LIB_PLATFORM_VERSION=linux
+
+COPY ./internal/postgres/migrations /app/migrations
+WORKDIR /app
+
+RUN  curl -L https://github.com/golang-migrate/migrate/releases/download/$LIB_MIGRATE_VERSION/migrate."$LIB_PLATFORM_VERSION"-amd64.tar.gz | tar xvz && mv migrate."$LIB_PLATFORM_VERSION"-amd64 migrate
+RUN chmod +x migrate
+
+CMD sh -c  "./migrate -source file://migrations -database $POSTGRES_DATABASE_ITEMS up"
