@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/Kount/pq-timeouts v1.0.0
+	github.com/dghubble/sling v1.3.0
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/golang/protobuf v1.4.0 // indirect
 	github.com/joho/godotenv v1.3.0
