@@ -2,10 +2,10 @@ package container
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/api"
 	"meli/app"
 	"meli/app/caching"
 	"meli/app/status"
+	"meli/internal/api"
 	pg "meli/internal/postgres"
 	rd "meli/internal/redis"
 	config "meli/pkg/config"
@@ -25,7 +25,7 @@ func Build() ControllerGroup {
 	redis := rd.NewRedis(configs)
 	log.Info("redis: ", redis)
 
-	itemRepository := app.NewItemRepository(configs)
+	itemRepository := app.NewItemRepository(postgres)
 
 	httpClient := api.NewHttpClient()
 	itemService := caching.NewItemService(httpClient, itemRepository)

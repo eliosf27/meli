@@ -39,8 +39,8 @@ func (s ItemService) getItem(id string) (app.Item, error) {
 	return resp, nil
 }
 
-func (s ItemService) getItemChildren(id string) ([]app.Children, error) {
-	var resp []app.Children
+func (s ItemService) getItemChildren(id string) ([]app.ItemChildren, error) {
+	var resp []app.ItemChildren
 	path := fmt.Sprintf(childrenPath, id)
 	res, err := s.sling.New().Get(path).ReceiveSuccess(&resp)
 	if err != nil || res == nil || res.StatusCode != http.StatusOK {
@@ -52,12 +52,12 @@ func (s ItemService) getItemChildren(id string) ([]app.Children, error) {
 	return resp, nil
 }
 
-func (s ItemService) getItemChildrenAsync(id string) <-chan []app.Children {
-	future := make(chan []app.Children)
+func (s ItemService) getItemChildrenAsync(id string) <-chan []app.ItemChildren {
+	future := make(chan []app.ItemChildren)
 
 	go func() {
 		if children, err := s.getItemChildren(id); err != nil {
-			future <- []app.Children{}
+			future <- []app.ItemChildren{}
 		} else {
 			future <- children
 		}
@@ -80,7 +80,7 @@ func (s ItemService) getItemAsync(id string) <-chan app.Item {
 	return future
 }
 
-func (s ItemService) Build(id string) app.Item {
+func (s ItemService) Get(id string) app.Item {
 	itemAsync := s.getItemAsync(id)
 	childAsync := s.getItemChildrenAsync(id)
 

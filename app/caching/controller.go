@@ -23,7 +23,7 @@ func NewItemController(Config config.Config, ItemService ItemService) ItemContro
 }
 
 func (c Controller) Get(ctx echo.Context) error {
-	id := ctx.QueryParam("item_id")
+	id := ctx.Param("item_id")
 	if strings.IsEmpty(id) {
 		return echo.NewHTTPError(http.StatusBadRequest, errors.New("invalid item id"))
 	}

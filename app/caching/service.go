@@ -2,8 +2,8 @@ package caching
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/api"
 	"meli/app"
+	"meli/internal/api"
 )
 
 type ItemService interface {
@@ -28,7 +28,7 @@ func (s *service) FetchItemByID(id string) app.Item {
 	}
 
 	if item.IsZero() {
-		item = s.httpClient.ItemService.Build(id)
+		item = s.httpClient.ItemService.Get(id)
 		err = s.itemRepository.Save(item)
 		if err != nil {
 			log.Errorf("error saving item | error: %+v", err)

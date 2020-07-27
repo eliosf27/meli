@@ -1,4 +1,4 @@
-package dal
+package postgres
 
 import (
 	"database/sql"
@@ -9,8 +9,7 @@ import (
 )
 
 type Postgres struct {
-	client *sql.DB
-	config config.Config
+	Client *sql.DB
 }
 
 func NewPostgres(config config.Config) Postgres {
@@ -22,8 +21,7 @@ func NewPostgres(config config.Config) Postgres {
 	}
 
 	return Postgres{
-		client: client,
-		config: config,
+		Client: client,
 	}
 }
 
