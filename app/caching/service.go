@@ -33,7 +33,7 @@ func (s *service) FetchItemByID(id string) app.Item {
 		if err != nil {
 			log.Errorf("error saving item | error: %+v", err)
 
-			return app.Item{}
+			return item
 		}
 	}
 

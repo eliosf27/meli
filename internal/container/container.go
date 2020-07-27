@@ -19,17 +19,21 @@ type ControllerGroup struct {
 func Build() ControllerGroup {
 	configs := config.NewConfig()
 
+	// storage
 	postgres := pg.NewPostgres(configs)
-	log.Info("postgres: ", postgres)
-
 	redis := rd.NewRedis(configs)
 	log.Info("redis: ", redis)
 
+	// http
+	httpClient := api.NewHttpClient(configs)
+
+	// repositories
 	itemRepository := app.NewItemRepository(postgres)
 
-	httpClient := api.NewHttpClient()
+	// services
 	itemService := caching.NewItemService(httpClient, itemRepository)
 
+	// controllers
 	group := ControllerGroup{}
 	group.StatusController = status.NewStatusController(configs)
 	group.ItemController = caching.NewItemController(configs, itemService)

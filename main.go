@@ -1,15 +1,15 @@
 package main
 
 import (
-	"meli/cmd/httpserver"
+	"meli/cmd/http"
 	"meli/internal/container"
 )
 
 func main() {
-	group := container.Build()
+	controllerGroup := container.Build()
 
-	server := httpserver.NewServer()
+	server := http.NewServer()
 	server.Middleware()
-	server.Routes(group)
+	server.Routes(controllerGroup)
 	server.Start()
 }

@@ -1,21 +1,19 @@
-package httpserver
+package http
 
 import (
 	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
-	e *echo.Echo
+	server *echo.Echo
 }
 
 func NewServer() *Server {
-	e := echo.New()
-	s := &Server{
-		e: e,
+	return &Server{
+		server: echo.New(),
 	}
-	return s
 }
 
 func (s *Server) Start() {
-	s.e.Logger.Fatal(s.e.Start(":8000"))
+	s.server.Logger.Fatal(s.server.Start(":8000"))
 }
