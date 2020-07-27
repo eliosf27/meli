@@ -11,6 +11,7 @@ type (
 		ProjectName    string `default:"meli"`
 		ProjectVersion string `default:"0.0.1"`
 		Environment    string `envconfig:"ENVIRONMENT" default:"prod"`
+		BaseEndpoint   string `envconfig:"BASE_ENDPOINT" required:"true"`
 		Redis          RedisSpecification
 		Postgres       PostgresSpecification
 	}
