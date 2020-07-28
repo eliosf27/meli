@@ -1,30 +1,30 @@
-package caching
+package item
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/app"
+	"meli/app/entities"
 	"meli/internal/api"
 )
 
 type ItemService interface {
-	FetchItemByID(id string) app.Item
+	FetchItemByID(id string) entities.Item
 }
 
 type service struct {
 	httpClient     api.HttpClient
-	itemRepository app.ItemRepository
+	itemRepository ItemRepository
 }
 
-func NewItemService(httpClient api.HttpClient, items app.ItemRepository) ItemService {
+func NewItemService(httpClient api.HttpClient, items ItemRepository) ItemService {
 	return &service{itemRepository: items, httpClient: httpClient}
 }
 
-func (s *service) FetchItemByID(id string) app.Item {
+func (s *service) FetchItemByID(id string) entities.Item {
 	item, err := s.itemRepository.Get(id)
 	if err != nil {
 		log.Errorf("error fetching item | error: %+v", err)
 
-		return app.Item{}
+		return entities.Item{}
 	}
 
 	if item.IsZero() {

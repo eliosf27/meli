@@ -1,4 +1,4 @@
-package app
+package entities
 
 type Item struct {
 	ItemId     string         `json:"item_id"`

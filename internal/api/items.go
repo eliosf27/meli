@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/dghubble/sling"
 	log "github.com/sirupsen/logrus"
-	"meli/app"
+	"meli/app/entities"
 	"net/http"
 )
 
@@ -25,8 +25,8 @@ func NewItemService(sling *sling.Sling) *ItemService {
 	}
 }
 
-func (s ItemService) getItem(id string) (app.Item, error) {
-	resp := app.Item{
+func (s ItemService) getItem(id string) (entities.Item, error) {
+	resp := entities.Item{
 		ItemId: id,
 	}
 	res, err := s.sling.Get(id).ReceiveSuccess(&resp)
@@ -39,8 +39,8 @@ func (s ItemService) getItem(id string) (app.Item, error) {
 	return resp, nil
 }
 
-func (s ItemService) getItemChildren(id string) ([]app.ItemChildren, error) {
-	var resp []app.ItemChildren
+func (s ItemService) getItemChildren(id string) ([]entities.ItemChildren, error) {
+	var resp []entities.ItemChildren
 	path := fmt.Sprintf(childrenPath, id)
 	res, err := s.sling.New().Get(path).ReceiveSuccess(&resp)
 	if err != nil || res == nil || res.StatusCode != http.StatusOK {
@@ -52,12 +52,12 @@ func (s ItemService) getItemChildren(id string) ([]app.ItemChildren, error) {
 	return resp, nil
 }
 
-func (s ItemService) getItemChildrenAsync(id string) <-chan []app.ItemChildren {
-	future := make(chan []app.ItemChildren)
+func (s ItemService) getItemChildrenAsync(id string) <-chan []entities.ItemChildren {
+	future := make(chan []entities.ItemChildren)
 
 	go func() {
 		if children, err := s.getItemChildren(id); err != nil {
-			future <- []app.ItemChildren{}
+			future <- []entities.ItemChildren{}
 		} else {
 			future <- children
 		}
@@ -66,12 +66,12 @@ func (s ItemService) getItemChildrenAsync(id string) <-chan []app.ItemChildren {
 	return future
 }
 
-func (s ItemService) getItemAsync(id string) <-chan app.Item {
-	future := make(chan app.Item)
+func (s ItemService) getItemAsync(id string) <-chan entities.Item {
+	future := make(chan entities.Item)
 
 	go func() {
 		if item, err := s.getItem(id); err != nil {
-			future <- app.Item{}
+			future <- entities.Item{}
 		} else {
 			future <- item
 		}
@@ -80,7 +80,7 @@ func (s ItemService) getItemAsync(id string) <-chan app.Item {
 	return future
 }
 
-func (s ItemService) Get(id string) app.Item {
+func (s ItemService) Get(id string) entities.Item {
 	itemAsync := s.getItemAsync(id)
 	childAsync := s.getItemChildrenAsync(id)
 

@@ -16,9 +16,14 @@ type Redis struct {
 func NewRedis(config config.Config) Redis {
 	client := buildClient(config)
 	if client == nil {
-		panic(fmt.Sprintf("Error connecting to redis"))
+		panic(fmt.Sprintf("Error connecting to redis server"))
+	}
+
+	status := client.Ping()
+	if status.Err() != nil {
+		log.Info("Redis => Monitoring | Cannot connect to redis server | Error => ", status.Err())
 	} else {
-		log.Info("Connected to redis server")
+		log.Info("Redis => Monitoring | Connected successfully")
 	}
 
 	return Redis{
@@ -34,7 +39,6 @@ func buildClient(config config.Config) *redis.Client {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 		OnConnect: func(*redis.Conn) error {
-			log.Info("Redis Connected.")
 			return nil
 		},
 		DialTimeout:  10 * time.Second,

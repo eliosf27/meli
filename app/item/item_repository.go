@@ -1,8 +1,9 @@
-package app
+package item
 
 import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
+	"meli/app/entities"
 	"meli/internal/postgres"
 	"meli/kit/queries"
 )
@@ -15,8 +16,8 @@ const (
 )
 
 type ItemRepository interface {
-	Get(Id string) (Item, error)
-	Save(item Item) error
+	Get(Id string) (entities.Item, error)
+	Save(item entities.Item) error
 }
 
 type ItemRepo struct {
@@ -27,12 +28,12 @@ func NewItemRepository(postgres postgres.Postgres) ItemRepository {
 	return ItemRepo{Postgres: postgres}
 }
 
-func (r ItemRepo) Get(id string) (Item, error) {
+func (r ItemRepo) Get(id string) (entities.Item, error) {
 	item, err := r.get(id)
 	if err != nil {
 		log.Errorf("ItemRepository.Get | Error getting item from DB: %+v", err)
 
-		return Item{}, err
+		return entities.Item{}, err
 	}
 	children, err := r.getChildren(id)
 	if err != nil {
@@ -46,7 +47,7 @@ func (r ItemRepo) Get(id string) (Item, error) {
 	return item, nil
 }
 
-func (r ItemRepo) Save(item Item) error {
+func (r ItemRepo) Save(item entities.Item) error {
 	client := r.Postgres.Client
 
 	tx, err := client.Begin()
@@ -88,7 +89,7 @@ func (r ItemRepo) Save(item Item) error {
 	return nil
 }
 
-func (r ItemRepo) save(client *sql.DB, item Item) error {
+func (r ItemRepo) save(client *sql.DB, item entities.Item) error {
 	query, err := queries.ReadQuery(InsertItem)
 	if err != nil {
 		log.Errorf("ItemRepository.Save | Error reading query: %+v", err)
@@ -112,7 +113,7 @@ func (r ItemRepo) save(client *sql.DB, item Item) error {
 	return nil
 }
 
-func (r ItemRepo) saveChildren(client *sql.DB, itemChildren ItemChildren) error {
+func (r ItemRepo) saveChildren(client *sql.DB, itemChildren entities.ItemChildren) error {
 	query, err := queries.ReadQuery(InsertItemChildren)
 	if err != nil {
 		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
@@ -129,21 +130,21 @@ func (r ItemRepo) saveChildren(client *sql.DB, itemChildren ItemChildren) error 
 	return nil
 }
 
-func (r ItemRepo) get(id string) (Item, error) {
+func (r ItemRepo) get(id string) (entities.Item, error) {
 	client := r.Postgres.Client
 
 	query, err := queries.ReadQuery(SelectItems)
 	if err != nil {
 		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
 
-		return Item{}, err
+		return entities.Item{}, err
 	}
 
 	rows, err := client.Query(query, id)
 	if err != nil {
 		log.Errorf("Error executing query: %+v", err)
 
-		return Item{}, err
+		return entities.Item{}, err
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
@@ -151,31 +152,31 @@ func (r ItemRepo) get(id string) (Item, error) {
 		}
 	}()
 
-	item := Item{}
+	item := entities.Item{}
 	for rows.Next() {
 		if err := rows.Scan(&item.ItemId, &item.Title, &item.CategoryId, &item.Price, &item.StartTime, &item.StopTime); err != nil {
 			log.Errorf("Error parsing response: %+v", err)
 
-			return Item{}, err
+			return entities.Item{}, err
 		}
 	}
 
 	return item, nil
 }
 
-func (r ItemRepo) getChildren(id string) ([]ItemChildren, error) {
+func (r ItemRepo) getChildren(id string) ([]entities.ItemChildren, error) {
 	client := r.Postgres.Client
 
 	query, err := queries.ReadQuery(SelectItemsChildren)
 	if err != nil {
 		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
 
-		return []ItemChildren{}, err
+		return []entities.ItemChildren{}, err
 	}
 
 	rows, err := client.Query(query, id)
 	if err != nil {
-		return []ItemChildren{}, err
+		return []entities.ItemChildren{}, err
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
@@ -183,11 +184,11 @@ func (r ItemRepo) getChildren(id string) ([]ItemChildren, error) {
 		}
 	}()
 
-	var children []ItemChildren
+	var children []entities.ItemChildren
 	for rows.Next() {
-		item := ItemChildren{}
+		item := entities.ItemChildren{}
 		if err := rows.Scan(&item.ItemId, &item.StopTime); err != nil {
-			return []ItemChildren{}, err
+			return []entities.ItemChildren{}, err
 		} else {
 			children = append(children, item)
 		}
