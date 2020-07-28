@@ -32,13 +32,17 @@ var (
 
 const (
 	environmentKey     = "ENVIRONMENT"
-	DevelopEnvironment = "dev"
+	DevelopEnvironment = "develop"
+	TestingEnvironment = "testing"
 )
 
 func NewConfig() Config {
 	Configs.Environment = os.Getenv(environmentKey)
 	if Configs.Environment == DevelopEnvironment {
 		_ = godotenv.Load(".env")
+	}
+	if Configs.Environment == TestingEnvironment {
+		_ = godotenv.Load(".env.testing")
 	}
 	if err := envconfig.Process("", &Configs); err != nil {
 		panic(err.Error())
