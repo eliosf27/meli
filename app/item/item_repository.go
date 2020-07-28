@@ -5,7 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"meli/app/entities"
 	"meli/internal/postgres"
-	"meli/kit/queries"
+	"meli/pkg/queries"
 )
 
 const (
@@ -48,31 +48,26 @@ func (r ItemRepo) Save(item entities.Item) error {
 		return err
 	}
 
-	err = r.save(client, item)
+	err = r.save(tx, item)
 	if err != nil {
 		log.Errorf(
-			"ItemRepository.SaveChildren | item : %v"+
+			"ItemRepository.save | item : %v"+
 				"Error executing insert: %+v", item, err,
 		)
-
-		_ = tx.Rollback()
 	}
 
 	for _, child := range item.Children {
-		err := r.saveChildren(client, child)
+		err := r.saveChildren(tx, child)
 		if err != nil {
 			log.Errorf(
-				"ItemRepository.SaveChildren | item : %v"+
+				"ItemRepository.saveChildren | child : %v"+
 					"Error executing insert: %+v", child, err,
 			)
-
-			_ = tx.Rollback()
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
 		log.Errorf("ItemRepository.SaveChildren | Error committing transaction: %s", err.Error())
-		_ = tx.Rollback()
 
 		return err
 	}
@@ -80,23 +75,18 @@ func (r ItemRepo) Save(item entities.Item) error {
 	return nil
 }
 
-func (r ItemRepo) save(client *sql.DB, item entities.Item) error {
+func (r ItemRepo) save(tx *sql.Tx, item entities.Item) error {
 	query, err := queries.ReadQuery(InsertItem)
 	if err != nil {
-		log.Errorf("ItemRepository.Save | Error reading query: %+v", err)
-
 		return err
 	}
 
-	_, err = client.Exec(query,
+	_, err = tx.Exec(query,
 		item.ItemId, item.Title, item.CategoryId,
 		item.Price, item.StartTime, item.StopTime,
 	)
 	if err != nil {
-		log.Errorf(
-			"ItemRepository.Save | item : %v"+
-				"Error executing insert: %+v", item, err,
-		)
+		tx.Rollback()
 
 		return err
 	}
@@ -104,17 +94,18 @@ func (r ItemRepo) save(client *sql.DB, item entities.Item) error {
 	return nil
 }
 
-func (r ItemRepo) saveChildren(client *sql.DB, itemChildren entities.ItemChildren) error {
+func (r ItemRepo) saveChildren(tx *sql.Tx, itemChildren entities.ItemChildren) error {
 	query, err := queries.ReadQuery(InsertItemChildren)
 	if err != nil {
-		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
 
 		return err
 	}
-	_, err = client.Exec(query,
+	_, err = tx.Exec(query,
 		itemChildren.ItemId, itemChildren.StopTime,
 	)
 	if err != nil {
+		tx.Rollback()
+
 		return err
 	}
 

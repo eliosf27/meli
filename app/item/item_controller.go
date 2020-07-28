@@ -3,8 +3,8 @@ package item
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
-	"meli/kit/strings"
 	config "meli/pkg/config"
+	"meli/pkg/strings"
 	"net/http"
 )
 
@@ -28,7 +28,7 @@ func (c Controller) Get(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, errors.New("invalid item id"))
 	}
 
-	return ctx.JSON(http.StatusOK, c.ItemService.FetchItemByID(id))
+	return ctx.JSON(http.StatusOK, c.ItemService.FetchItemById(id))
 }
 
 type ItemController interface {

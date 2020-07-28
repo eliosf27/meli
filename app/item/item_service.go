@@ -7,7 +7,7 @@ import (
 )
 
 type ItemService interface {
-	FetchItemByID(id string) entities.Item
+	FetchItemById(id string) entities.Item
 }
 
 type service struct {
@@ -19,7 +19,7 @@ func NewItemService(httpClient api.HttpClient, items ItemRepository) ItemService
 	return &service{itemRepository: items, httpClient: httpClient}
 }
 
-func (s *service) FetchItemByID(id string) entities.Item {
+func (s *service) FetchItemById(id string) entities.Item {
 	item, err := s.itemRepository.Get(id)
 	if err != nil {
 		log.Errorf("error fetching item | error: %+v", err)

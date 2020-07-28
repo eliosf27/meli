@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	itemsBasePath = "/items/"
+	itemsBasePath = "items/"
 	childrenPath  = "%s/children"
 )
 
@@ -31,7 +31,7 @@ func (s ItemService) getItem(id string) (entities.Item, error) {
 	}
 	res, err := s.sling.Get(id).ReceiveSuccess(&resp)
 	if err != nil || res == nil || res.StatusCode != http.StatusOK {
-		log.Error("Error retrieving toolkits: ", err)
+		log.Error("Error retrieving item: ", err)
 
 		return resp, err
 	}
@@ -44,7 +44,7 @@ func (s ItemService) getItemChildren(id string) ([]entities.ItemChildren, error)
 	path := fmt.Sprintf(childrenPath, id)
 	res, err := s.sling.New().Get(path).ReceiveSuccess(&resp)
 	if err != nil || res == nil || res.StatusCode != http.StatusOK {
-		log.Error("Error retrieving toolkits: ", err)
+		log.Error("Error retrieving children item: ", err)
 
 		return resp, err
 	}
@@ -90,4 +90,12 @@ func (s ItemService) Get(id string) entities.Item {
 	item.Children = child
 
 	return item
+}
+
+func (s ItemService) GetItemPath(id string) string {
+	return itemsBasePath + id
+}
+
+func (s ItemService) GetItemChildrenPath(id string) string {
+	return itemsBasePath + fmt.Sprintf(childrenPath, id)
 }
