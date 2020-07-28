@@ -11,7 +11,6 @@ import (
 const (
 	InsertItem          = "insert_item"
 	InsertItemChildren  = "insert_item_children"
-	SelectItems         = "select_items"
 	SelectItemsChildren = "select_items_children"
 )
 
@@ -29,20 +28,12 @@ func NewItemRepository(postgres postgres.Postgres) ItemRepository {
 }
 
 func (r ItemRepo) Get(id string) (entities.Item, error) {
-	item, err := r.get(id)
-	if err != nil {
-		log.Errorf("ItemRepository.Get | Error getting item from DB: %+v", err)
-
-		return entities.Item{}, err
-	}
-	children, err := r.getChildren(id)
+	item, err := r.getItem(id)
 	if err != nil {
 		log.Errorf("ItemRepository.Get | Error getting children from DB: %+v", err)
 
-		return item, err
+		return entities.Item{}, err
 	}
-
-	item.Children = children
 
 	return item, nil
 }
@@ -130,53 +121,19 @@ func (r ItemRepo) saveChildren(client *sql.DB, itemChildren entities.ItemChildre
 	return nil
 }
 
-func (r ItemRepo) get(id string) (entities.Item, error) {
+func (r ItemRepo) getItem(id string) (entities.Item, error) {
 	client := r.Postgres.Client
-
-	query, err := queries.ReadQuery(SelectItems)
-	if err != nil {
-		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
-
-		return entities.Item{}, err
-	}
-
-	rows, err := client.Query(query, id)
-	if err != nil {
-		log.Errorf("Error executing query: %+v", err)
-
-		return entities.Item{}, err
-	}
-	defer func() {
-		if err := rows.Close(); err != nil {
-			log.Errorf("Error closing rows: %+v", err)
-		}
-	}()
-
-	item := entities.Item{}
-	for rows.Next() {
-		if err := rows.Scan(&item.ItemId, &item.Title, &item.CategoryId, &item.Price, &item.StartTime, &item.StopTime); err != nil {
-			log.Errorf("Error parsing response: %+v", err)
-
-			return entities.Item{}, err
-		}
-	}
-
-	return item, nil
-}
-
-func (r ItemRepo) getChildren(id string) ([]entities.ItemChildren, error) {
-	client := r.Postgres.Client
-
 	query, err := queries.ReadQuery(SelectItemsChildren)
 	if err != nil {
 		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
 
-		return []entities.ItemChildren{}, err
+		return entities.Item{}, err
 	}
 
 	rows, err := client.Query(query, id)
 	if err != nil {
-		return []entities.ItemChildren{}, err
+
+		return entities.Item{}, err
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
@@ -184,15 +141,29 @@ func (r ItemRepo) getChildren(id string) ([]entities.ItemChildren, error) {
 		}
 	}()
 
-	var children []entities.ItemChildren
+	itemResult := entities.Item{}
+	children := make([]entities.ItemChildren, 0)
 	for rows.Next() {
-		item := entities.ItemChildren{}
-		if err := rows.Scan(&item.ItemId, &item.StopTime); err != nil {
-			return []entities.ItemChildren{}, err
+		item := entities.Item{}
+		itemChildren := entities.ItemChildren{}
+		err := rows.Scan(
+			&item.ItemId, &item.Title, &item.CategoryId,
+			&item.Price, &item.StartTime, &item.StopTime,
+			&itemChildren.ItemId, &itemChildren.StopTime,
+		)
+
+		if err != nil {
+
+			return entities.Item{}, err
 		} else {
-			children = append(children, item)
+			if itemResult.IsZero() {
+				itemResult = item
+			}
+			children = append(children, itemChildren)
 		}
 	}
 
-	return children, nil
+	itemResult.Children = children
+
+	return itemResult, nil
 }
