@@ -15,8 +15,9 @@ func MockItem(id string) entities.Item {
 }
 
 func MockItemChildren(id string) []entities.ItemChildren {
+	stopTime := "2019-03-02T20:31:02.000Z"
 	return []entities.ItemChildren{
-		{ItemId: id, StopTime: "2019-03-02T20:31:02.000Z"},
-		{ItemId: id, StopTime: "2019-03-02T20:31:02.000Z"},
+		{ItemId: &id, StopTime: &stopTime},
+		{ItemId: &id, StopTime: &stopTime},
 	}
 }

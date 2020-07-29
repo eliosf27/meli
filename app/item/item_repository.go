@@ -54,6 +54,8 @@ func (r ItemRepo) Save(item entities.Item) error {
 			"ItemRepository.save | item : %v"+
 				"Error executing insert: %+v", item, err,
 		)
+
+		return err
 	}
 
 	for _, child := range item.Children {
@@ -63,6 +65,8 @@ func (r ItemRepo) Save(item entities.Item) error {
 				"ItemRepository.saveChildren | child : %v"+
 					"Error executing insert: %+v", child, err,
 			)
+
+			return err
 		}
 	}
 
@@ -150,7 +154,10 @@ func (r ItemRepo) getItem(id string) (entities.Item, error) {
 			if itemResult.IsZero() {
 				itemResult = item
 			}
-			children = append(children, itemChildren)
+
+			if !itemChildren.IsZero() {
+				children = append(children, itemChildren)
+			}
 		}
 	}
 

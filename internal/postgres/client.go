@@ -4,8 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/Kount/pq-timeouts"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	log "github.com/sirupsen/logrus"
 	config "meli/pkg/config"
+	"meli/pkg/files"
+	"path/filepath"
 	"time"
 )
 
@@ -51,4 +56,25 @@ func buildClient(connection string) (*sql.DB, error) {
 	db.SetConnMaxLifetime(time.Minute * 2)
 
 	return db, nil
+}
+
+func (p Postgres) RunMigrations() {
+	projectPath := files.GetProjectPath()
+	filePath := filepath.Join("file://", projectPath, "internal/postgres/migrations")
+
+	driver, err := postgres.WithInstance(p.Client, &postgres.Config{})
+	if err != nil {
+		panic(fmt.Sprintf("RunMigrations | Error creating DB instance: %s", err.Error()))
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(filePath, "postgres", driver)
+	if err != nil {
+		panic(fmt.Sprintf("RunMigrations | Error creating migration instance: %s", err.Error()))
+	}
+
+	if err = m.Up(); err != nil {
+		log.Warning("RunMigrations | Error running migration: ", err)
+	} else {
+		log.Info("RunMigrations | Database migrations processed...")
+	}
 }
