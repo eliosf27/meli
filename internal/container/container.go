@@ -10,12 +10,14 @@ import (
 	config "meli/pkg/config"
 )
 
-type ControllerGroup struct {
+type Dependencies struct {
 	StatusController status.StatusController
 	ItemController   item.ItemController
+	Config           config.Config
 }
 
-func Build() ControllerGroup {
+// Build build all the project dependencies
+func Build() Dependencies {
 	configs := config.NewConfig()
 
 	// storage
@@ -33,9 +35,10 @@ func Build() ControllerGroup {
 	itemService := item.NewItemService(httpClient, itemRepository)
 
 	// controllers
-	group := ControllerGroup{}
-	group.StatusController = status.NewStatusController(configs)
-	group.ItemController = item.NewItemController(configs, itemService)
+	dependencies := Dependencies{}
+	dependencies.StatusController = status.NewStatusController(configs)
+	dependencies.ItemController = item.NewItemController(configs, itemService)
+	dependencies.Config = configs
 
-	return group
+	return dependencies
 }

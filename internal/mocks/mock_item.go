@@ -2,6 +2,7 @@ package mock_item
 
 import "meli/app/entities"
 
+// MockItem create a fake entity Item
 func MockItem(id string) entities.Item {
 	return entities.Item{
 		ItemId:     id,
@@ -14,6 +15,7 @@ func MockItem(id string) entities.Item {
 	}
 }
 
+// MockItemChildren create a fake entity ItemChildren
 func MockItemChildren(id string) []entities.ItemChildren {
 	stopTime := "2019-03-02T20:31:02.000Z"
 	return []entities.ItemChildren{

@@ -4,7 +4,8 @@ import (
 	"meli/internal/container"
 )
 
-func (s *Server) Routes(group container.ControllerGroup) {
+// Middleware build the routes of the server
+func (s *Server) Routes(group container.Dependencies) {
 	s.server.GET("/", group.StatusController.Status)
 
 	items := s.server.Group("/items")

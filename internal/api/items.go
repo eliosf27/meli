@@ -25,6 +25,7 @@ func NewItemService(sling *sling.Sling) *ItemService {
 	}
 }
 
+// getItem fetch the item from the api in a sync way
 func (s ItemService) getItem(id string) (entities.Item, error) {
 	resp := entities.Item{
 		ItemId: id,
@@ -39,6 +40,7 @@ func (s ItemService) getItem(id string) (entities.Item, error) {
 	return resp, nil
 }
 
+// getItemChildren fetch the children item from the api in a sync way
 func (s ItemService) getItemChildren(id string) ([]entities.ItemChildren, error) {
 	var resp []entities.ItemChildren
 	path := fmt.Sprintf(childrenPath, id)
@@ -52,6 +54,7 @@ func (s ItemService) getItemChildren(id string) ([]entities.ItemChildren, error)
 	return resp, nil
 }
 
+// getItemChildren fetch the children item from the api in a async way
 func (s ItemService) getItemChildrenAsync(id string) <-chan []entities.ItemChildren {
 	future := make(chan []entities.ItemChildren)
 
@@ -66,6 +69,7 @@ func (s ItemService) getItemChildrenAsync(id string) <-chan []entities.ItemChild
 	return future
 }
 
+// getItem fetch the item from the api in a async way
 func (s ItemService) getItemAsync(id string) <-chan entities.Item {
 	future := make(chan entities.Item)
 
@@ -80,6 +84,7 @@ func (s ItemService) getItemAsync(id string) <-chan entities.Item {
 	return future
 }
 
+// Get return the item, fetching data from the api and building the item
 func (s ItemService) Get(id string) entities.Item {
 	itemAsync := s.getItemAsync(id)
 	childAsync := s.getItemChildrenAsync(id)
@@ -92,10 +97,12 @@ func (s ItemService) Get(id string) entities.Item {
 	return item
 }
 
+// GetItemPath return the item path
 func (s ItemService) GetItemPath(id string) string {
 	return itemsBasePath + id
 }
 
+// GetItemChildrenPath return the item children path
 func (s ItemService) GetItemChildrenPath(id string) string {
 	return itemsBasePath + fmt.Sprintf(childrenPath, id)
 }

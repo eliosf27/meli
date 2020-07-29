@@ -1,7 +1,9 @@
 package http
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
+	"meli/internal/container"
 )
 
 type Server struct {
@@ -14,6 +16,7 @@ func NewServer() *Server {
 	}
 }
 
-func (s *Server) Start() {
-	s.server.Logger.Fatal(s.server.Start(":8000"))
+// Middleware run the server
+func (s *Server) Start(dependencies container.Dependencies) {
+	s.server.Logger.Fatal(s.server.Start(fmt.Sprintf(":%s", dependencies.Config.Port)))
 }

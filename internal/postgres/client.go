@@ -36,6 +36,7 @@ func NewPostgres(config config.Config) Postgres {
 	}
 }
 
+// buildClient build a new postgres client with its configurations
 func buildClient(connection string) (*sql.DB, error) {
 	url := "%s?sslmode=disable&connect_timeout=%d&read_timeout=%d&write_timeout=%d"
 
@@ -58,6 +59,7 @@ func buildClient(connection string) (*sql.DB, error) {
 	return db, nil
 }
 
+// RunMigrations execute the postgres migration of the project
 func (p Postgres) RunMigrations() {
 	projectPath := files.GetProjectPath()
 	filePath := filepath.Join("file://", projectPath, "internal/postgres/migrations")

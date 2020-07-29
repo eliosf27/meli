@@ -32,6 +32,7 @@ func NewPostgresContainer() PostgresContainer {
 	}
 }
 
+// Up create a new postgres container with the connections params
 func (c PostgresContainer) Up() PostgresConnection {
 	containerRequest := testcontainers.ContainerRequest{
 		Image:        "postgres",
@@ -66,6 +67,7 @@ func (c PostgresContainer) Up() PostgresConnection {
 	}
 }
 
+// Down destroy the postgres container
 func (c PostgresContainer) Down() error {
 	if c.Container != nil {
 		err := c.Container.Terminate(context.Background())

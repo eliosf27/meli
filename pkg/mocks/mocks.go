@@ -13,15 +13,18 @@ func NewHttpMock() HttpMock {
 	return HttpMock{}
 }
 
+// Activate starts the mock environment
 func (HttpMock) Activate() {
 	httpmock.Activate()
 }
 
+// DeactivateAndReset shuts down the mock environment
 func (HttpMock) DeactivateAndReset() {
 	httpmock.DeactivateAndReset()
 }
 
-func (HttpMock) HttpMockResponse(method string, url string, data interface{}) {
+// httpMockResponse adds a new responder, associated with a given HTTP method and URL with a mock data interface
+func (HttpMock) httpMockResponse(method string, url string, data interface{}) {
 	httpmock.RegisterResponder(method, url,
 		func(req *http.Request) (*http.Response, error) {
 			resp, err := httpmock.NewJsonResponse(200, data)
@@ -33,19 +36,12 @@ func (HttpMock) HttpMockResponse(method string, url string, data interface{}) {
 	)
 }
 
+// Post adds a new responder, associated with the HTTP POST method and URL with a mock data interface
 func (mockHttp HttpMock) Post(url string, data interface{}) {
-	mockHttp.HttpMockResponse("POST", url, data)
+	mockHttp.httpMockResponse("POST", url, data)
 }
 
+// Post adds a new responder, associated with the HTTP GET method and URL with a mock data interface
 func (mockHttp HttpMock) Get(url string, data interface{}) {
-	mockHttp.HttpMockResponse("GET", url, data)
-}
-
-func (mockHttp HttpMock) Calls(path string) int {
-	calls := httpmock.GetCallCountInfo()
-	if res, ok := calls[path]; ok {
-		return res
-	}
-
-	return 0
+	mockHttp.httpMockResponse("GET", url, data)
 }

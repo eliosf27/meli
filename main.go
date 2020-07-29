@@ -6,10 +6,10 @@ import (
 )
 
 func main() {
-	controllerGroup := container.Build()
+	dependencies := container.Build()
 
 	server := http.NewServer()
 	server.Middleware()
-	server.Routes(controllerGroup)
-	server.Start()
+	server.Routes(dependencies)
+	server.Start(dependencies)
 }

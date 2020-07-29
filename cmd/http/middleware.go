@@ -10,6 +10,7 @@ var (
 	excludedGzipPaths = []string{"docs", "metrics"}
 )
 
+// Middleware build the middlewares of the server
 func (s *Server) Middleware() {
 	s.server.Use(echoMiddleware.LoggerWithConfig(echoMiddleware.LoggerConfig{
 		CustomTimeFormat: "2006-01-02T15:04:05.1483386-00:00",
