@@ -15,6 +15,10 @@ func (i *Item) IsZero() bool {
 }
 
 type ItemChildren struct {
-	ItemId   string `json:"parent_item_id"`
-	StopTime string `json:"stop_time"`
+	ItemId   *string `json:"parent_item_id"`
+	StopTime *string `json:"stop_time"`
+}
+
+func (i *ItemChildren) IsZero() bool {
+	return i.ItemId == nil || *i.ItemId == ""
 }
