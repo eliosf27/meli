@@ -2,29 +2,29 @@
 
 - Locally
 
-      ```
-      $ go run server.go
-      ```
+    $ go run server.go
 
 - Docker
 
-      ```
-      $ docker build --force-rm -t meli .
-      ```
+    $ docker build --env-file configs/.env --force-rm -t meli .
+      
+    $ docker run -it --env-file config/.env -p 8000:8000 --restart=always --name=meli meli
+      
 
-      ```
-      $ docker run -it -p 8000:8000 --restart=always --name=meli meli
-      ```
- 
+# Update dependencies vendor dir (Try to not use this command unless is strictly necessary)
+    
+    go mod vendor
+     
  
 # Migrations
+    
     Script:
-        ```
-            ./scripts/run_migrations.sh
-        ```
+
+        ./scripts/run_migrations.sh
+
 # Environment Variables
 
-    `export $(cat configs/.env | grep -v ^# | xargs)`
+    export $(cat configs/.env | grep -v ^# | xargs)
 
 # Tests
 

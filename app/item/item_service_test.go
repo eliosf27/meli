@@ -75,7 +75,7 @@ var _ = Describe("ItemService", func() {
 				configs := config.NewConfig()
 				httpClient := api.NewHttpClient(configs)
 
-				// http mocks
+				// httpserver mocks
 				itemChildrenPath := fmt.Sprintf(
 					"%s%s", configs.BaseEndpoint, httpClient.ItemService.GetItemChildrenPath(itemId),
 				)

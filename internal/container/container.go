@@ -25,7 +25,7 @@ func Build() Dependencies {
 	redis := rd.NewRedis(configs)
 	log.Info("redis: ", redis)
 
-	// http
+	// httpserver
 	httpClient := api.NewHttpClient(configs)
 
 	// repositories

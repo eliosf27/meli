@@ -1,15 +1,19 @@
 # build stage
-FROM golang:1.14 as builder
+FROM golang:latest as builder
 
-ENV GO111MODULE=on
-WORKDIR /app
+WORKDIR /go/src/meli
 COPY . .
-RUN go build
+
+RUN go install -mod=vendor -v ./...
 
 FROM debian:stable-slim
 
-ENV ENVIRONMENT=prod
-COPY --from=builder /app /app
-WORKDIR /app
+COPY --from=builder /go/bin/ /app/
+COPY config/* /app/config/
 
-ENTRYPOINT ["/app/meli"]
+ENV ENVIRONMENT=prod
+
+WORKDIR /app/
+
+USER 1000:1000
+ENTRYPOINT ["/app/httpserver" ]

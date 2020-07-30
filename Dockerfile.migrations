@@ -9,4 +9,5 @@ WORKDIR /app
 RUN  curl -L https://github.com/golang-migrate/migrate/releases/download/$LIB_MIGRATE_VERSION/migrate."$LIB_PLATFORM_VERSION"-amd64.tar.gz | tar xvz && mv migrate."$LIB_PLATFORM_VERSION"-amd64 migrate
 RUN chmod +x migrate
 
+RUN echo "$POSTGRES_ITEMS_CONNECTION"
 CMD sh -c  "./migrate -source file://migrations -database $POSTGRES_ITEMS_CONNECTION up"
