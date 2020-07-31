@@ -6,7 +6,7 @@
 
 - Docker
 
-    $ docker build --env-file configs/.env --force-rm -t meli .
+    $ docker build --env-file config/.env --force-rm -t meli .
       
     $ docker run -it --env-file config/.env -p 8000:8000 --restart=always --name=meli meli
       
