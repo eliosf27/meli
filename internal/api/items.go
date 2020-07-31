@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/dghubble/sling"
 	log "github.com/sirupsen/logrus"
-	"meli/app/entities"
+	"meli/internal/app/entities"
 	"net/http"
 )
 

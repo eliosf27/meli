@@ -2,9 +2,9 @@ package container
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/app/item"
-	"meli/app/status"
 	"meli/internal/api"
+	"meli/internal/app/item"
+	"meli/internal/app/status"
 	pg "meli/internal/postgres"
 	rd "meli/internal/redis"
 	config "meli/pkg/config"

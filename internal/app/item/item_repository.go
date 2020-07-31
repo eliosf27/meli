@@ -3,7 +3,7 @@ package item
 import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
-	"meli/app/entities"
+	"meli/internal/app/entities"
 	"meli/internal/postgres"
 	"meli/pkg/queries"
 )

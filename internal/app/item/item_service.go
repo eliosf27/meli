@@ -2,8 +2,8 @@ package item
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/app/entities"
 	"meli/internal/api"
+	"meli/internal/app/entities"
 )
 
 type ItemService interface {
