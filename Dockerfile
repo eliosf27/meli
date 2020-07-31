@@ -11,7 +11,7 @@ FROM debian:stable-slim
 COPY --from=builder /go/bin/ /app/
 COPY config/* /app/config/
 
-ENV ENVIRONMENT=prod
+ENV ENVIRONMENT=production
 
 WORKDIR /app/
 

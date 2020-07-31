@@ -1,6 +1,6 @@
 package mock_item
 
-import "meli/app/entities"
+import "meli/internal/app/entities"
 
 // MockItem create a fake entity Item
 func MockItem(id string) entities.Item {

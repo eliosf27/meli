@@ -1,44 +1,59 @@
 version: '3'
 services:
-  meli-items:
+  meli:
+    container_name: meli-server
+    ports:
+      - 8000:8000
     build:
       context: ./
       dockerfile: Dockerfile.dev
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgres
-      - redis
-    env_file:
-      - ./config/.env
     volumes:
       - ./:/go/src/meli
     working_dir: /go/src/meli
-    command: go run main.go
+    depends_on:
+      - db
+      - migrations
+      - redis
+    env_file:
+      - ./config/.env.docker-compose
     networks:
       - backend
 
-  postgres:
-    image: postgres
-    container_name: postgres-meli-items-9999999999
+  migrations:
+    image: debian:stable-slim
+    container_name: meli-migrations
+    volumes:
+      - ./:/go/src/meli
+      - ./scripts/run_migrations.sh:/usr/local/bin/run_migrations.sh
+    working_dir: /go/src/meli
+    command: run_migrations.sh
+    env_file:
+      - ./config/.env.docker-compose
+    depends_on:
+      - db
+    networks:
+      - backend
+
+  db:
+    image: library/postgres:latest
+    container_name: meli-db
+    ports:
+      - 15432:5432
     environment:
       POSTGRES_USER: docker
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: meli
-    volumes:
-      - ./internal/postgres/migrations:/docker-entrypoint-initdb.d/migrations
     networks:
       - backend
 
   redis:
     image: redis:alpine
-    container_name: redis-meli-items
+    ports:
+      - 16379:6379
+    container_name: meli-redis
     networks:
       - backend
 
-volumes:
-  api:
-  database_postgres:
-
 networks:
   backend:
+

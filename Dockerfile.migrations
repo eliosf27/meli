@@ -2,7 +2,7 @@ FROM golang:1.14
 
 ARG LIB_MIGRATE_VERSION=v4.10.0
 ARG LIB_PLATFORM_VERSION=linux
-
+ARG SSL_MODE=?sslmode=disable
 COPY ./internal/postgres/migrations /app/migrations
 WORKDIR /app
 
@@ -10,4 +10,4 @@ RUN  curl -L https://github.com/golang-migrate/migrate/releases/download/$LIB_MI
 RUN chmod +x migrate
 
 RUN echo "$POSTGRES_ITEMS_CONNECTION"
-CMD sh -c  "./migrate -source file://migrations -database $POSTGRES_ITEMS_CONNECTION up"
+CMD sh -c  "./migrate -source file://migrations -database $POSTGRES_ITEMS_CONNECTION$SSL_MODE up"

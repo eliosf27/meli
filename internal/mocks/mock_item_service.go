@@ -6,7 +6,7 @@ package mock_item
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	entities "meli/app/entities"
+	entities "meli/internal/app/entities"
 	reflect "reflect"
 )
 
