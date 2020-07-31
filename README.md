@@ -35,7 +35,7 @@
 
 # Environment Variables
 
-    export $(cat configs/.env | grep -v ^# | xargs)
+    export $(cat config/.env | grep -v ^# | xargs)
 
 # Tests
 

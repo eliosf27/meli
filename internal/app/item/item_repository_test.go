@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	log "github.com/sirupsen/logrus"
-	"meli/app/item"
+	"meli/internal/app/item"
 	mocks "meli/internal/mocks"
 	pg "meli/internal/postgres"
 	config "meli/pkg/config"
