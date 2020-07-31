@@ -12,13 +12,7 @@ import (
 	mocks "meli/internal/mocks"
 	config "meli/pkg/config"
 	mocksPkg "meli/pkg/mocks"
-	"testing"
 )
-
-func TestIte3m(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Item Suite")
-}
 
 var _ = Describe("ItemService", func() {
 	var ctrl *gomock.Controller

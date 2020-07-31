@@ -9,13 +9,7 @@ import (
 	pg "meli/internal/postgres"
 	config "meli/pkg/config"
 	"meli/pkg/testcontainers"
-	"testing"
 )
-
-func TestItem22(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Item Suite")
-}
 
 var _ = Describe("ItemRepository", func() {
 	var container testcontainers.PostgresContainer
