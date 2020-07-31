@@ -6,43 +6,15 @@ services:
       - 8000:8000
     build:
       context: ./
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - ./:/go/src/meli
     working_dir: /go/src/meli
     depends_on:
       - db
-      - migrations
       - redis
     env_file:
       - ./config/.env.docker-compose
-    networks:
-      - backend
-
-  migrations:
-    image: debian:stable-slim
-    container_name: meli-migrations
-    volumes:
-      - ./:/go/src/meli
-      - ./scripts/run_migrations.sh:/usr/local/bin/run_migrations.sh
-    working_dir: /go/src/meli
-    command: run_migrations.sh
-    env_file:
-      - ./config/.env.docker-compose
-    depends_on:
-      - db
-    networks:
-      - backend
-
-  db:
-    image: library/postgres:latest
-    container_name: meli-db
-    ports:
-      - 15432:5432
-    environment:
-      POSTGRES_USER: docker
-      POSTGRES_PASSWORD: docker
-      POSTGRES_DB: meli
     networks:
       - backend
 
@@ -56,4 +28,3 @@ services:
 
 networks:
   backend:
-

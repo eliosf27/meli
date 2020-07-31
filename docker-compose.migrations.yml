@@ -1,0 +1,16 @@
+version: '3'
+services:
+  migrations:
+    image: debian:stable-slim
+    container_name: meli-migrations
+    volumes:
+      - ./:/go/src/meli
+      - ./scripts/run_migrations.sh:/usr/local/bin/run_migrations.sh
+    working_dir: /go/src/meli
+    command: run_migrations.sh
+    env_file:
+      - ./config/.env.docker-compose
+    depends_on:
+      - db
+    networks:
+      - backend

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  db:
+    image: library/postgres:latest
+    container_name: meli-db
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: meli
+    networks:
+      - backend
+
+networks:
+  backend:

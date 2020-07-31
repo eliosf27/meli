@@ -51,3 +51,29 @@
     Run tests
         export $(cat config/.env.testing | grep -v ^# | xargs) && go test ./... -coverprofile=coverage.out
     
+# docker-compose
+
+    Run project
+    
+        docker-compose -f docker-compose.db.yml -f docker-compose.yml up --build
+         
+    Run migrations
+        
+        docker-compose -f docker-compose.db.yml -f docker-compose.migrations.yml up
+        
+    Scripts
+        - Enter in the scripts directory
+            
+            cd scripts
+        
+        - Run and build the project
+        
+            make build 
+            
+        - Run the project
+        
+            make run
+            
+        - Run the migrations
+            
+            make run
