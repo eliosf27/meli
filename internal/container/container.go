@@ -2,10 +2,11 @@ package container
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/internal/api"
 	"meli/internal/app/item"
 	"meli/internal/app/status"
+	"meli/internal/http"
 	pg "meli/internal/postgres"
+	"meli/internal/queue"
 	rd "meli/internal/redis"
 	config "meli/pkg/config"
 )
@@ -25,14 +26,20 @@ func Build() Dependencies {
 	redis := rd.NewRedis(configs)
 	log.Info("redis: ", redis)
 
-	// httpserver
-	httpClient := api.NewHttpClient(configs)
+	// queues
+	itemQueue := queue.NewItemQueue()
+
+	// httpClient
+	httpClient := http.NewHttpClient(configs, &itemQueue)
+
+	// http services
+	itemHttpService := http.NewItemHttpService(&httpClient)
 
 	// repositories
 	itemRepository := item.NewItemRepository(postgres)
 
 	// services
-	itemService := item.NewItemService(httpClient, itemRepository)
+	itemService := item.NewItemService(itemHttpService, itemRepository)
 
 	// controllers
 	dependencies := Dependencies{}

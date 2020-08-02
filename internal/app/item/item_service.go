@@ -2,8 +2,8 @@ package item
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/internal/api"
 	"meli/internal/app/entities"
+	"meli/internal/http"
 )
 
 type ItemService interface {
@@ -11,12 +11,12 @@ type ItemService interface {
 }
 
 type service struct {
-	httpClient     api.HttpClient
-	itemRepository ItemRepository
+	itemHttpService http.ItemHttpService
+	itemRepository  ItemRepository
 }
 
-func NewItemService(httpClient api.HttpClient, items ItemRepository) ItemService {
-	return &service{itemRepository: items, httpClient: httpClient}
+func NewItemService(httpClient http.ItemHttpService, items ItemRepository) ItemService {
+	return &service{itemRepository: items, itemHttpService: httpClient}
 }
 
 func (s *service) FetchItemById(id string) entities.Item {
@@ -28,7 +28,7 @@ func (s *service) FetchItemById(id string) entities.Item {
 	}
 
 	if item.IsZero() {
-		item = s.httpClient.ItemService.Get(id)
+		item = s.itemHttpService.Get(id)
 		err = s.itemRepository.Save(item)
 		if err != nil {
 			log.Errorf("error saving item | error: %+v", err)

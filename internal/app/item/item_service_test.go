@@ -6,15 +6,15 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"meli/internal/api"
 	"meli/internal/app/entities"
 	"meli/internal/app/item"
+	"meli/internal/http"
 	mocks "meli/internal/mocks"
 	config "meli/pkg/config"
 	mocksPkg "meli/pkg/mocks"
 )
 
-var _ = Describe("ItemService", func() {
+var _ = Describe("ItemHttpService", func() {
 	var ctrl *gomock.Controller
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
@@ -27,7 +27,7 @@ var _ = Describe("ItemService", func() {
 		When("an error is returned by the repository", func() {
 			It("should return an empty item", func() {
 				configs := config.NewConfig()
-				httpClient := api.NewHttpClient(configs)
+				httpClient := http.NewHttpDirector(configs)
 
 				mockRepository := mocks.NewMockItemRepository(ctrl)
 				mockRepository.EXPECT().Get(gomock.Any()).Return(entities.Item{}, errors.New("not valid item")).AnyTimes()
@@ -44,7 +44,7 @@ var _ = Describe("ItemService", func() {
 			It("should return a not empty item", func() {
 				itemId := "yyy"
 				configs := config.NewConfig()
-				httpClient := api.NewHttpClient(configs)
+				httpClient := http.NewHttpDirector(configs)
 
 				mockRepository := mocks.NewMockItemRepository(ctrl)
 				mockRepository.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: itemId}, nil).AnyTimes()
@@ -59,7 +59,7 @@ var _ = Describe("ItemService", func() {
 		})
 
 		When("an empty item is returned by the repository", func() {
-			It("should request the api and return a valid item", func() {
+			It("should request the http and return a valid item", func() {
 				httpMock := mocksPkg.NewHttpMock()
 				httpMock.Activate()
 				defer httpMock.DeactivateAndReset()
@@ -67,7 +67,7 @@ var _ = Describe("ItemService", func() {
 				// dependencies
 				itemId := "yyy"
 				configs := config.NewConfig()
-				httpClient := api.NewHttpClient(configs)
+				httpClient := http.NewHttpDirector(configs)
 
 				// httpserver mocks
 				itemChildrenPath := fmt.Sprintf(
