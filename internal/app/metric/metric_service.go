@@ -37,13 +37,18 @@ func (s *service) UpdateMetric(item entities.ItemMetric) error {
 }
 
 func (s *service) FetchMetrics() []entities.ItemMetricResponse {
-	var responses []entities.ItemMetricResponse
 	metricsMap, err := s.redis.HGetAll(MetricsKey)
 	if err != nil {
 		log.Errorf("error getting all metrics [%s] - %+v", MetricsKey, err)
 
-		return responses
+		return []entities.ItemMetricResponse{}
 	}
+
+	return s.buildMetrics(metricsMap)
+}
+
+func (s *service) buildMetrics(metricsMap map[string]string) []entities.ItemMetricResponse {
+	var responses []entities.ItemMetricResponse
 
 	for _, val := range metricsMap {
 		metricResponse := entities.ItemMetricResponse{
@@ -51,7 +56,9 @@ func (s *service) FetchMetrics() []entities.ItemMetricResponse {
 		}
 		currentMetrics := map[string]entities.ItemMetrics{}
 		if err := json.Unmarshal([]byte(val), &currentMetrics); err != nil {
-			log.Errorf("Error unmarshal currentMetrics: %+v", err)
+			log.Errorf("error unmarshal currentMetrics: %+v", err)
+
+			return responses
 		}
 
 		if localMetric, ok := currentMetrics[entities.LocalApi]; ok {
@@ -64,18 +71,7 @@ func (s *service) FetchMetrics() []entities.ItemMetricResponse {
 			metricResponse.Time = externalMetric.Time
 			metricResponse.TotalCountApiCalls = externalMetric.ResponsesTime.Count()
 			metricResponse.AvgResponseTimeApiCall = externalMetric.ResponsesTime.Avg()
-
-			var infos []entities.InfoRequest
-			for statusCode, count := range externalMetric.StatusCode {
-				info := entities.InfoRequest{
-					StatusCode: int64(statusCode),
-					Count:      count,
-				}
-
-				infos = append(infos, info)
-			}
-
-			metricResponse.InfoRequests = infos
+			metricResponse.InfoRequests = s.buildInfo(externalMetric.StatusCode)
 		}
 
 		if !metricResponse.IsZero() {
@@ -84,6 +80,21 @@ func (s *service) FetchMetrics() []entities.ItemMetricResponse {
 	}
 
 	return responses
+}
+
+func (s *service) buildInfo(statusCodes map[int]int64) []entities.InfoRequest {
+	var infos []entities.InfoRequest
+
+	for statusCode, count := range statusCodes {
+		info := entities.InfoRequest{
+			StatusCode: int64(statusCode),
+			Count:      count,
+		}
+
+		infos = append(infos, info)
+	}
+
+	return infos
 }
 
 func (s *service) fetch(key string, field string) (map[string]entities.ItemMetrics, error) {
