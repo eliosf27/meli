@@ -16,6 +16,7 @@ type Dependencies struct {
 	ItemController   item.ItemController
 	Config           config.Config
 	Queue            *queue.ItemQueue
+	QueueConsumers   []queue.Consumer
 }
 
 // Build build all the project dependencies
@@ -29,6 +30,7 @@ func Build() Dependencies {
 
 	// queues
 	itemQueue := queue.NewItemQueue()
+	itemConsumer := queue.NewItemConsumer(&itemQueue)
 
 	// httpClient
 	httpClient := http.NewHttpClient(configs, &itemQueue)
@@ -48,6 +50,7 @@ func Build() Dependencies {
 	dependencies.ItemController = item.NewItemController(configs, itemService)
 	dependencies.Config = configs
 	dependencies.Queue = &itemQueue
+	dependencies.QueueConsumers = append(dependencies.QueueConsumers, itemConsumer)
 
 	return dependencies
 }

@@ -72,14 +72,14 @@ func (s *ItemQueue) Listen(callback func(item Item) error) {
 		}
 
 		log.Infof(
-			"reading item with type: %s, status_code: %d, response_time: %f",
+			"reading item with type: %s, status_code: %d, response_time: %d",
 			val.Type, val.StatusCode, val.ResponseTime,
 		)
 
 		err := callback(*val)
 		if err != nil {
 			log.Errorf(
-				"error trying to executing the item with type: %s, status_code: %d, response_time: %f",
+				"error trying to executing the item with type: %s, status_code: %d, response_time: %d",
 				val.Type, val.StatusCode, val.ResponseTime,
 			)
 			s.Enqueue(*val)
