@@ -15,6 +15,7 @@ type Dependencies struct {
 	StatusController status.StatusController
 	ItemController   item.ItemController
 	Config           config.Config
+	Queue            *queue.ItemQueue
 }
 
 // Build build all the project dependencies
@@ -41,11 +42,12 @@ func Build() Dependencies {
 	// services
 	itemService := item.NewItemService(itemHttpService, itemRepository)
 
-	// controllers
+	// server dependencies
 	dependencies := Dependencies{}
 	dependencies.StatusController = status.NewStatusController(configs)
 	dependencies.ItemController = item.NewItemController(configs, itemService)
 	dependencies.Config = configs
+	dependencies.Queue = &itemQueue
 
 	return dependencies
 }
