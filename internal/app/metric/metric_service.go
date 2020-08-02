@@ -108,7 +108,7 @@ func (s *service) save(key string, field string, metrics map[string]entities.Ite
 	metricsRaw, err := json.Marshal(&metrics)
 	if err != nil {
 		log.Errorf(
-			"Error marshalling item for saving metrics [%s] - [%s] - %+v", key, err,
+			"Error marshalling item for saving metrics [%s] - %+v", key, err,
 		)
 
 		return err
@@ -116,7 +116,7 @@ func (s *service) save(key string, field string, metrics map[string]entities.Ite
 
 	_, err = s.redis.HSet(key, field, metricsRaw)
 	if err != nil {
-		log.Errorf("Error saving metrics [%s] - [%s] - %+v", key, err)
+		log.Errorf("Error saving metrics [%s] - %+v", key, err)
 
 		return err
 	}
