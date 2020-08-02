@@ -51,7 +51,7 @@ func (mr *MockItemRepositoryMockRecorder) Get(Id interface{}) *gomock.Call {
 // Save mocks base method
 func (m *MockItemRepository) Save(item entities.Item) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Save", item)
+	ret := m.ctrl.Call(m, "save", item)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
@@ -59,5 +59,5 @@ func (m *MockItemRepository) Save(item entities.Item) error {
 // Save indicates an expected call of Save
 func (mr *MockItemRepositoryMockRecorder) Save(item interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockItemRepository)(nil).Save), item)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "save", reflect.TypeOf((*MockItemRepository)(nil).Save), item)
 }

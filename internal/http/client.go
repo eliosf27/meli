@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/dghubble/sling"
+	"meli/internal/app/entities"
 	"meli/internal/queue"
 	config "meli/pkg/config"
 	"net/http"
@@ -30,11 +31,7 @@ func (s *HttpClient) Get(path string, resp interface{}) (*http.Response, error) 
 	elapsed := time.Since(start)
 
 	if response != nil {
-		s.queue.Enqueue(queue.Item{
-			Type:         queue.ExternalApi,
-			ResponseTime: elapsed.Milliseconds(),
-			StatusCode:   response.StatusCode,
-		})
+		s.queue.Enqueue(entities.NewExternalMetric(response.StatusCode, elapsed.Milliseconds()))
 	}
 
 	return response, err

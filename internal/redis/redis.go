@@ -50,3 +50,48 @@ func buildClient(config config.Config) *redis.Client {
 
 	return redis.NewClient(options)
 }
+
+func (r *Redis) Set(key string, data []byte, duration time.Duration) ([]byte, error) {
+	status := r.client.Set(key, data, duration)
+	if status.Err() != nil {
+		return []byte{}, status.Err()
+	}
+
+	return []byte(status.Val()), nil
+}
+
+func (r *Redis) Get(key string) ([]byte, error) {
+	status := r.client.Get(key)
+	if status.Err() != nil {
+		return []byte{}, status.Err()
+	}
+
+	return []byte(status.Val()), nil
+}
+
+func (r *Redis) HSet(key string, field string, data []byte) (bool, error) {
+	status := r.client.HSet(key, field, data)
+	if status.Err() != nil {
+		return false, status.Err()
+	}
+
+	return status.Val(), nil
+}
+
+func (r *Redis) HGet(key string, field string) ([]byte, error) {
+	status := r.client.HGet(key, field)
+	if status.Err() != nil {
+		return []byte{}, status.Err()
+	}
+
+	return []byte(status.Val()), nil
+}
+
+func (r *Redis) HGetAll(key string) (map[string]string, error) {
+	status := r.client.HGetAll(key)
+	if status.Err() != nil {
+		return map[string]string{}, status.Err()
+	}
+
+	return status.Val(), nil
+}

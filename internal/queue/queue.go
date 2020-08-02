@@ -2,49 +2,34 @@ package queue
 
 import (
 	log "github.com/sirupsen/logrus"
+	"meli/internal/app/entities"
 	"sync"
 	"time"
 )
 
-const (
-	LocalApi    = "local_api"
-	ExternalApi = "external_api"
-)
-
-// Item the type of the queue
-type Item struct {
-	Type         string
-	ResponseTime int64
-	StatusCode   int
-}
-
-func (s *Item) IsZero() bool {
-	return s.Type == ""
-}
-
 // ItemQueue the queue of Items
 type ItemQueue struct {
-	items []Item
+	items []entities.ItemMetric
 	lock  sync.RWMutex
 }
 
 // NewItemQueue creates a new ItemQueue
 func NewItemQueue() ItemQueue {
 	return ItemQueue{
-		items: []Item{},
+		items: []entities.ItemMetric{},
 		lock:  sync.RWMutex{},
 	}
 }
 
-// Enqueue adds an Item to the end of the queue
-func (s *ItemQueue) Enqueue(t Item) {
+// Enqueue adds an ItemMetric to the end of the queue
+func (s *ItemQueue) Enqueue(t entities.ItemMetric) {
 	s.lock.Lock()
 	s.items = append(s.items, t)
 	s.lock.Unlock()
 }
 
-// Dequeue removes an Item from the start of the queue
-func (s *ItemQueue) Dequeue() *Item {
+// Dequeue removes an ItemMetric from the start of the queue
+func (s *ItemQueue) Dequeue() *entities.ItemMetric {
 	s.lock.Lock()
 	item := s.items[0]
 	s.items = s.items[1:len(s.items)]
@@ -58,7 +43,7 @@ func (s *ItemQueue) IsEmpty() bool {
 }
 
 // Listen check and process an item every n seconds
-func (s *ItemQueue) Listen(callback func(item Item) error) {
+func (s *ItemQueue) Listen(callback func(item entities.ItemMetric) error) {
 	for {
 		time.Sleep(1 * time.Second)
 
