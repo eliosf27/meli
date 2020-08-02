@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/dghubble/sling"
-	"meli/internal/app/entities"
+	"meli/internal/entities"
 	"meli/internal/queue"
 	config "meli/pkg/config"
 	"net/http"

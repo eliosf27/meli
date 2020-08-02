@@ -19,4 +19,5 @@ require (
 	github.com/testcontainers/testcontainers-go v0.7.0
 	golang.org/x/sys v0.0.0-20200727154430-2d971f7391a4 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/go-playground/validator.v9 v9.31.0
 )

@@ -2,7 +2,7 @@ package queue
 
 import (
 	log "github.com/sirupsen/logrus"
-	"meli/internal/app/entities"
+	"meli/internal/entities"
 	"sync"
 	"time"
 )

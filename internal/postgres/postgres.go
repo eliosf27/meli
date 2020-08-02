@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	config "meli/pkg/config"
 	"meli/pkg/files"
+	"meli/pkg/queries"
 	"path/filepath"
 	"time"
 )
@@ -60,7 +61,7 @@ func buildClient(connection string) (*sql.DB, error) {
 }
 
 // RunMigrations execute the postgres migration of the project
-func (p Postgres) RunMigrations() {
+func (p *Postgres) RunMigrations() {
 	projectPath := files.GetProjectPath()
 	filePath := filepath.Join("file://", projectPath, "internal/postgres/migrations")
 
@@ -79,4 +80,51 @@ func (p Postgres) RunMigrations() {
 	} else {
 		log.Info("RunMigrations | Database migrations processed...")
 	}
+}
+
+func (p *Postgres) Execute(sql string, args ...interface{}) error {
+	query, err := queries.ReadQuery(sql)
+	if err != nil {
+
+		return err
+	}
+
+	_, err = p.Client.Exec(query, args)
+	if err != nil {
+
+		return err
+	}
+
+	return nil
+}
+
+type Rows sql.Rows
+
+func (p *Postgres) Query(sql string, params ...interface{}) (*sql.Rows, error) {
+	query, err := queries.ReadQuery(sql)
+	if err != nil {
+		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
+
+		return nil, err
+	}
+
+	rows, err := p.Client.Query(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Errorf("Error closing rows: %+v", err)
+		}
+	}()
+
+	//for rows.Next() {
+	//	err := rows.Scan(values)
+	//	if err != nil {
+	//
+	//	}
+	//}
+
+	return rows, nil
 }

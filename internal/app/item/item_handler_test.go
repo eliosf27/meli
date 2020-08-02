@@ -5,15 +5,15 @@ import (
 	"github.com/labstack/echo/v4"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"meli/internal/app/entities"
 	"meli/internal/app/item"
+	"meli/internal/entities"
 	mocks "meli/internal/mocks"
 	config "meli/pkg/config"
 	"net/http"
 	"net/http/httptest"
 )
 
-var _ = Describe("ItemController", func() {
+var _ = Describe("ItemHandler", func() {
 	var ctrl *gomock.Controller
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
@@ -30,7 +30,7 @@ var _ = Describe("ItemController", func() {
 				mockService := mocks.NewMockItemService(ctrl)
 				mockService.EXPECT().FetchItemById(gomock.Any()).Return(entities.Item{}).AnyTimes()
 
-				itemController := item.NewItemController(configs, mockService)
+				itemController := item.NewItemHandle(configs, mockService)
 
 				e := echo.New()
 				req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -53,7 +53,7 @@ var _ = Describe("ItemController", func() {
 				mockService := mocks.NewMockItemService(ctrl)
 				mockService.EXPECT().FetchItemById(gomock.Any()).Return(entities.Item{}).AnyTimes()
 
-				itemController := item.NewItemController(configs, mockService)
+				itemController := item.NewItemHandle(configs, mockService)
 
 				e := echo.New()
 				req := httptest.NewRequest(http.MethodGet, "/", nil)

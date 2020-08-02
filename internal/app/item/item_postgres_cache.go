@@ -3,7 +3,7 @@ package item
 import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
-	"meli/internal/app/entities"
+	"meli/internal/entities"
 	"meli/internal/postgres"
 	"meli/pkg/queries"
 )
@@ -14,23 +14,22 @@ const (
 	SelectItemsChildren = "select_items_children"
 )
 
-type ItemRepository interface {
-	Get(Id string) (entities.Item, error)
-	Save(item entities.Item) error
+type ItemPostgresCache struct {
+	postgres postgres.Postgres
 }
 
-type ItemRepo struct {
-	Postgres postgres.Postgres
+func NewItemPostgresCache(postgres postgres.Postgres) Cacher {
+	return ItemPostgresCache{postgres: postgres}
 }
 
-func NewItemRepository(postgres postgres.Postgres) ItemRepository {
-	return ItemRepo{Postgres: postgres}
+func (r ItemPostgresCache) MustApply(strategy string) bool {
+	return strategy == PostgresCache
 }
 
-func (r ItemRepo) Get(id string) (entities.Item, error) {
+func (r ItemPostgresCache) Get(id string) (entities.Item, error) {
 	item, err := r.getItem(id)
 	if err != nil {
-		log.Errorf("ItemRepository.Get | Error getting children from DB: %+v", err)
+		log.Errorf("ItemPostgresCache.Get | Error getting children from DB: %+v", err)
 
 		return entities.Item{}, err
 	}
@@ -38,12 +37,12 @@ func (r ItemRepo) Get(id string) (entities.Item, error) {
 	return item, nil
 }
 
-func (r ItemRepo) Save(item entities.Item) error {
-	client := r.Postgres.Client
+func (r ItemPostgresCache) Save(item entities.Item) error {
+	client := r.postgres.Client
 
 	tx, err := client.Begin()
 	if err != nil {
-		log.Errorf("ItemRepository.SaveChildren | Error connecting to DB: %+v", err)
+		log.Errorf("ItemPostgresCache.SaveChildren | Error connecting to DB: %+v", err)
 
 		return err
 	}
@@ -51,7 +50,7 @@ func (r ItemRepo) Save(item entities.Item) error {
 	err = r.save(tx, item)
 	if err != nil {
 		log.Errorf(
-			"ItemRepository.save | item : %v"+
+			"ItemPostgresCache.save | item : %v"+
 				"Error executing insert: %+v", item, err,
 		)
 
@@ -62,7 +61,7 @@ func (r ItemRepo) Save(item entities.Item) error {
 		err := r.saveChildren(tx, child)
 		if err != nil {
 			log.Errorf(
-				"ItemRepository.saveChildren | child : %v"+
+				"ItemPostgresCache.saveChildren | child : %v"+
 					"Error executing insert: %+v", child, err,
 			)
 
@@ -71,7 +70,7 @@ func (r ItemRepo) Save(item entities.Item) error {
 	}
 
 	if err := tx.Commit(); err != nil {
-		log.Errorf("ItemRepository.SaveChildren | Error committing transaction: %s", err.Error())
+		log.Errorf("ItemPostgresCache.SaveChildren | Error committing transaction: %s", err.Error())
 
 		return err
 	}
@@ -79,7 +78,7 @@ func (r ItemRepo) Save(item entities.Item) error {
 	return nil
 }
 
-func (r ItemRepo) save(tx *sql.Tx, item entities.Item) error {
+func (r ItemPostgresCache) save(tx *sql.Tx, item entities.Item) error {
 	query, err := queries.ReadQuery(InsertItem)
 	if err != nil {
 		return err
@@ -98,7 +97,7 @@ func (r ItemRepo) save(tx *sql.Tx, item entities.Item) error {
 	return nil
 }
 
-func (r ItemRepo) saveChildren(tx *sql.Tx, itemChildren entities.ItemChildren) error {
+func (r ItemPostgresCache) saveChildren(tx *sql.Tx, itemChildren entities.ItemChildren) error {
 	query, err := queries.ReadQuery(InsertItemChildren)
 	if err != nil {
 
@@ -116,11 +115,11 @@ func (r ItemRepo) saveChildren(tx *sql.Tx, itemChildren entities.ItemChildren) e
 	return nil
 }
 
-func (r ItemRepo) getItem(id string) (entities.Item, error) {
-	client := r.Postgres.Client
+func (r ItemPostgresCache) getItem(id string) (entities.Item, error) {
+	client := r.postgres.Client
 	query, err := queries.ReadQuery(SelectItemsChildren)
 	if err != nil {
-		log.Errorf("ItemRepository.SaveChildren | Error reading query: %+v", err)
+		log.Errorf("ItemPostgresCache.SaveChildren | Error reading query: %+v", err)
 
 		return entities.Item{}, err
 	}

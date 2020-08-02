@@ -9,6 +9,7 @@ func main() {
 
 	server := NewServer(dependencies)
 	server.Middleware()
+	server.Validator()
 	server.Routes()
 	server.Start()
 }

@@ -1,10 +1,10 @@
 package container
 
 import (
-	log "github.com/sirupsen/logrus"
-	"meli/internal/app/item"
-	"meli/internal/app/metric"
-	"meli/internal/app/status"
+	appConfig "meli/internal/app/config"
+	appItem "meli/internal/app/item"
+	appMetric "meli/internal/app/metric"
+	appStatus "meli/internal/app/status"
 	"meli/internal/http"
 	pg "meli/internal/postgres"
 	"meli/internal/queue"
@@ -13,12 +13,13 @@ import (
 )
 
 type Dependencies struct {
-	StatusController status.StatusController
-	ItemController   item.ItemController
-	MetricController metric.MetricController
-	Config           config.Config
-	Queue            *queue.ItemQueue
-	QueueConsumers   []queue.Consumer
+	StatusHandler  appStatus.StatusHandler
+	ItemHandler    appItem.ItemHandler
+	MetricHandler  appMetric.MetricHandler
+	ConfigHandler  appConfig.ConfigHandler
+	Config         config.Config
+	Queue          *queue.ItemQueue
+	QueueConsumers []queue.Consumer
 }
 
 // Build build all the project dependencies
@@ -28,11 +29,10 @@ func Build() Dependencies {
 	// storage
 	postgres := pg.NewPostgres(configs)
 	redis := rd.NewRedis(configs)
-	log.Info("redis: ", redis)
 
 	// queues
 	itemQueue := queue.NewItemQueue()
-	metricsService := metric.NewMetricService(redis)
+	metricsService := appMetric.NewMetricService(redis)
 	itemConsumer := queue.NewItemConsumer(&itemQueue, metricsService)
 
 	// httpClient
@@ -41,18 +41,22 @@ func Build() Dependencies {
 	// http services
 	itemHttpService := http.NewItemHttpService(&httpClient)
 
-	// repositories
-	itemRepository := item.NewItemRepository(postgres)
+	// caches
+	itemPostgresCache := appItem.NewItemPostgresCache(postgres)
+	itemRedisCache := appItem.NewItemRedisCache(redis)
+	itemCache := appItem.NewItemCache([]appItem.Cacher{itemPostgresCache, itemRedisCache})
 
 	// services
-	itemService := item.NewItemService(itemHttpService, itemRepository)
-	metricService := metric.NewMetricService(redis)
+	itemService := appItem.NewItemService(itemHttpService, itemCache)
+	metricService := appMetric.NewMetricService(redis)
+	configService := appConfig.NewConfigService(redis)
 
 	// server dependencies
 	dependencies := Dependencies{}
-	dependencies.StatusController = status.NewStatusController(configs)
-	dependencies.ItemController = item.NewItemController(configs, itemService)
-	dependencies.MetricController = metric.NewMetricController(configs, metricService)
+	dependencies.StatusHandler = appStatus.NewStatusHandler(configs)
+	dependencies.ItemHandler = appItem.NewItemHandle(configs, itemService)
+	dependencies.MetricHandler = appMetric.NewMetricHandler(configs, metricService)
+	dependencies.ConfigHandler = appConfig.NewConfigHandle(configService)
 	dependencies.Config = configs
 	dependencies.Queue = &itemQueue
 	dependencies.QueueConsumers = append(dependencies.QueueConsumers, itemConsumer)

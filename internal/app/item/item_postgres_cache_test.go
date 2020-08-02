@@ -31,7 +31,7 @@ var _ = Describe("ItemRepository", func() {
 				postgres := pg.NewPostgres(configs)
 				postgres.RunMigrations()
 
-				repository := item.NewItemRepository(postgres)
+				repository := item.NewItemPostgresCache(postgres)
 				log.Info(repository)
 
 				err := repository.Save(mocks.MockItem("xxx"))
@@ -51,7 +51,7 @@ var _ = Describe("ItemRepository", func() {
 				postgres := pg.NewPostgres(configs)
 				postgres.RunMigrations()
 
-				repository := item.NewItemRepository(postgres)
+				repository := item.NewItemPostgresCache(postgres)
 				log.Info(repository)
 
 				err := repository.Save(mocks.MockItem(itemId))
@@ -75,7 +75,7 @@ var _ = Describe("ItemRepository", func() {
 				postgres := pg.NewPostgres(configs)
 				postgres.RunMigrations()
 
-				repository := item.NewItemRepository(postgres)
+				repository := item.NewItemPostgresCache(postgres)
 				log.Info(repository)
 
 				mockItem := mocks.MockItem(itemId)

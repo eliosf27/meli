@@ -2,17 +2,21 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"meli/internal/app/entities"
+	"meli/internal/entities"
 	"time"
 )
 
 // Routes build the routes of the server
 func (s *Server) Routes() {
-	s.server.GET("/", s.dependencies.StatusController.Status)
-	s.server.GET("/health", s.dependencies.MetricController.Health)
+	s.server.GET("/", s.dependencies.StatusHandler.Status)
+	s.server.GET("/health", s.dependencies.MetricHandler.Health)
 
 	items := s.server.Group("/items")
-	items.GET("/:item_id", s.Tracking(s.dependencies.ItemController.Get))
+	items.GET("/:item_id", s.Tracking(s.dependencies.ItemHandler.Get))
+
+	config := s.server.Group("/config")
+	config.POST("/save", s.dependencies.ConfigHandler.Save)
+	config.POST("/fetch", s.dependencies.ConfigHandler.Fetch)
 }
 
 // Tracking track and save the local requests

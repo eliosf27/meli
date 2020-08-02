@@ -6,8 +6,8 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"meli/internal/app/entities"
 	"meli/internal/app/item"
+	"meli/internal/entities"
 	"meli/internal/http"
 	mocks "meli/internal/mocks"
 	"meli/internal/queue"
@@ -32,10 +32,10 @@ var _ = Describe("ItemHttpService", func() {
 				httpClient := http.NewHttpClient(configs, &itemQueue)
 				itemHttpService := http.NewItemHttpService(&httpClient)
 
-				mockRepository := mocks.NewMockItemRepository(ctrl)
-				mockRepository.EXPECT().Get(gomock.Any()).Return(entities.Item{}, errors.New("not valid item")).AnyTimes()
+				mockItemCacher := mocks.NewMockItemCacher(ctrl)
+				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{}, errors.New("not valid item")).AnyTimes()
 
-				itemService := item.NewItemService(itemHttpService, mockRepository)
+				itemService := item.NewItemService(itemHttpService, mockItemCacher)
 
 				item := itemService.FetchItemById("xxx")
 
@@ -51,10 +51,10 @@ var _ = Describe("ItemHttpService", func() {
 				httpClient := http.NewHttpClient(configs, &itemQueue)
 				itemHttpService := http.NewItemHttpService(&httpClient)
 
-				mockRepository := mocks.NewMockItemRepository(ctrl)
-				mockRepository.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: itemId}, nil).AnyTimes()
+				mockItemCacher := mocks.NewMockItemCacher(ctrl)
+				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: itemId}, nil).AnyTimes()
 
-				itemService := item.NewItemService(itemHttpService, mockRepository)
+				itemService := item.NewItemService(itemHttpService, mockItemCacher)
 
 				item := itemService.FetchItemById(itemId)
 
@@ -87,12 +87,12 @@ var _ = Describe("ItemHttpService", func() {
 				httpMock.Get(itemChildrenPath, mocks.MockItemChildren(itemId))
 
 				// repository mocks
-				mockRepository := mocks.NewMockItemRepository(ctrl)
-				mockRepository.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: ""}, nil).AnyTimes()
-				mockRepository.EXPECT().Save(gomock.Any()).Return(nil).AnyTimes()
+				mockItemCacher := mocks.NewMockItemCacher(ctrl)
+				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: ""}, nil).AnyTimes()
+				mockItemCacher.EXPECT().Save(gomock.Any()).Return(nil).AnyTimes()
 
 				// service to test
-				itemService := item.NewItemService(itemHttpService, mockRepository)
+				itemService := item.NewItemService(itemHttpService, mockItemCacher)
 				item := itemService.FetchItemById(itemId)
 
 				Expect(item).To(Not(Equal(item.IsZero())))

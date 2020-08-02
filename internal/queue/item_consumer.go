@@ -1,8 +1,8 @@
 package queue
 
 import (
-	"meli/internal/app/entities"
 	"meli/internal/app/metric"
+	"meli/internal/entities"
 )
 
 type Consumer interface {

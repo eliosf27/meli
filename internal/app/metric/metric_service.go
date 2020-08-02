@@ -3,7 +3,7 @@ package metric
 import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	"meli/internal/app/entities"
+	"meli/internal/entities"
 	"meli/internal/redis"
 	"meli/pkg/slice"
 )

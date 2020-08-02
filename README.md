@@ -39,7 +39,7 @@
 
     Generate mocks:
     
-        mockgen -source=app/item/item_controller.go -destination=internal/mocks/mock_item_controller.go
+        mockgen -source=internal/app/item/item_controller.go -destination=internal/mocks/mock_item_controller.go
         
     Generate a test suite
     

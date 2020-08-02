@@ -3,7 +3,7 @@ package http
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"meli/internal/app/entities"
+	"meli/internal/entities"
 )
 
 const (
