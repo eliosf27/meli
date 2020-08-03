@@ -25,7 +25,11 @@ func (s *ItemService) FetchItemById(id string) entities.Item {
 	storage := s.Storage()
 	s.itemCache.SetStrategy(storage)
 
-	item, _ := s.itemCache.Get(id)
+	item, err := s.itemCache.Get(id)
+	if err != nil {
+		log.Errorf("error fetching item | error: %+v", err)
+	}
+
 	if item.IsZero() {
 		item = s.itemHttpService.Get(id)
 		err := s.itemCache.Save(item)
