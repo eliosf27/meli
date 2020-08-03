@@ -3,6 +3,7 @@ package item
 import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
+	config "meli/internal/app/config"
 	"meli/internal/entities"
 	"meli/internal/postgres"
 	"meli/pkg/queries"
@@ -76,6 +77,11 @@ func (r ItemPostgresCache) Save(item entities.Item) error {
 	}
 
 	return nil
+}
+
+func (r ItemPostgresCache) Name() string {
+
+	return config.PostgresStorage
 }
 
 func (r ItemPostgresCache) save(tx *sql.Tx, item entities.Item) error {

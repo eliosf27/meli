@@ -2,8 +2,10 @@ package item
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	config "meli/internal/app/config"
 	"meli/internal/entities"
 	"meli/internal/redis"
 	"time"
@@ -24,6 +26,11 @@ func (r ItemRedisCache) MustApply(strategy string) bool {
 func (r ItemRedisCache) Get(id string) (entities.Item, error) {
 	key := r.buildKey(id)
 	val, err := r.redis.Get(key)
+	if !r.redis.Exist(err) {
+
+		return entities.Item{}, errors.New("metric not found")
+	}
+
 	if err != nil {
 		log.Errorf("ItemRedisCache.Get | error fetching item cache [%s] - %+v", key, err)
 
@@ -59,6 +66,11 @@ func (r ItemRedisCache) Save(item entities.Item) error {
 	}
 
 	return nil
+}
+
+func (r ItemRedisCache) Name() string {
+
+	return config.RedisStorage
 }
 
 func (r ItemRedisCache) buildKey(id string) string {

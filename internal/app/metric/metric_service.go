@@ -8,7 +8,7 @@ import (
 	"meli/pkg/slice"
 )
 
-const MetricsKey = "meli-metrics"
+const MetricsKey = "meli:metrics"
 
 type MetricService interface {
 	UpdateMetric(item entities.ItemMetric) error
@@ -26,11 +26,7 @@ func NewMetricService(redis redis.Redis) MetricService {
 func (s *service) UpdateMetric(item entities.ItemMetric) error {
 	key := MetricsKey
 	field := item.Field()
-	metrics, err := s.fetch(key, field)
-	if err != nil {
-		return err
-	}
-
+	metrics, _ := s.fetch(key, field)
 	metrics = s.calculate(item, metrics)
 
 	return s.save(key, field, metrics)

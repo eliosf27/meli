@@ -1,4 +1,4 @@
-package item
+package config
 
 import (
 	"github.com/labstack/echo/v4"
@@ -8,7 +8,7 @@ import (
 
 type ConfigHandler interface {
 	Fetch(c echo.Context) error
-	Save(ctx echo.Context) error
+	Update(ctx echo.Context) error
 }
 
 type ConfigHandle struct {
@@ -22,19 +22,16 @@ func NewConfigHandle(service ConfigServicer) ConfigHandler {
 }
 
 func (c ConfigHandle) Fetch(ctx echo.Context) error {
-	req := new(request.FindConfig)
-	if err := ctx.Bind(req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	if err := ctx.Validate(req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	val, err := c.configService.Fetch()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, req)
+	return ctx.JSON(http.StatusOK, val)
 }
 
-func (c ConfigHandle) Save(ctx echo.Context) error {
-	req := new(request.SaveConfig)
+func (c ConfigHandle) Update(ctx echo.Context) error {
+	req := new(request.UpdateStorage)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -42,5 +39,10 @@ func (c ConfigHandle) Save(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, req)
+	err := c.configService.Update(req.Storage)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, "storage updated")
 }

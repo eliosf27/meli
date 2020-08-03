@@ -95,3 +95,8 @@ func (r *Redis) HGetAll(key string) (map[string]string, error) {
 
 	return status.Val(), nil
 }
+
+func (r *Redis) Exist(err error) bool {
+
+	return err != redis.Nil
+}

@@ -14,10 +14,10 @@ type ItemHandler interface {
 
 type ItemHandle struct {
 	config      config.Config
-	itemService ItemService
+	itemService ItemServicer
 }
 
-func NewItemHandle(Config config.Config, ItemService ItemService) ItemHandler {
+func NewItemHandle(Config config.Config, ItemService ItemServicer) ItemHandler {
 	return ItemHandle{
 		config:      Config,
 		itemService: ItemService,

@@ -41,15 +41,17 @@ func Build() Dependencies {
 	// http services
 	itemHttpService := http.NewItemHttpService(&httpClient)
 
+	// other services
+	configService := appConfig.NewConfigService(redis)
+
 	// caches
 	itemPostgresCache := appItem.NewItemPostgresCache(postgres)
 	itemRedisCache := appItem.NewItemRedisCache(redis)
-	itemCache := appItem.NewItemCache([]appItem.Cacher{itemPostgresCache, itemRedisCache})
+	itemCache := appItem.NewItemCache(itemPostgresCache, itemRedisCache)
 
 	// services
-	itemService := appItem.NewItemService(itemHttpService, itemCache)
+	itemService := appItem.NewItemService(itemHttpService, itemCache, configService)
 	metricService := appMetric.NewMetricService(redis)
-	configService := appConfig.NewConfigService(redis)
 
 	// server dependencies
 	dependencies := Dependencies{}

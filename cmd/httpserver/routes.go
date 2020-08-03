@@ -15,8 +15,8 @@ func (s *Server) Routes() {
 	items.GET("/:item_id", s.Tracking(s.dependencies.ItemHandler.Get))
 
 	config := s.server.Group("/config")
-	config.POST("/save", s.dependencies.ConfigHandler.Save)
-	config.POST("/fetch", s.dependencies.ConfigHandler.Fetch)
+	config.GET("/", s.dependencies.ConfigHandler.Fetch)
+	config.PUT("/", s.dependencies.ConfigHandler.Update)
 }
 
 // Tracking track and save the local requests

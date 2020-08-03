@@ -6,11 +6,14 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"meli/internal/app/item"
+	appConfig "meli/internal/app/config"
+	appItem "meli/internal/app/item"
 	"meli/internal/entities"
 	"meli/internal/http"
 	mocks "meli/internal/mocks"
+	"meli/internal/postgres"
 	"meli/internal/queue"
+	redis2 "meli/internal/redis"
 	config "meli/pkg/config"
 	mocksPkg "meli/pkg/mocks"
 )
@@ -26,20 +29,29 @@ var _ = Describe("ItemHttpService", func() {
 
 	Context("calling the FetchItemById method", func() {
 		When("an error is returned by the repository", func() {
-			It("should return an empty item", func() {
+			It("should return an valid item", func() {
 				configs := config.NewConfig()
+				redis := redis2.NewRedis(configs)
+				postgres := postgres.NewPostgres(configs)
 				itemQueue := queue.NewItemQueue()
 				httpClient := http.NewHttpClient(configs, &itemQueue)
 				itemHttpService := http.NewItemHttpService(&httpClient)
+				configService := appConfig.NewConfigService(redis)
+				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
 
+				itemId := "jjj"
+				anItem := entities.Item{}
 				mockItemCacher := mocks.NewMockItemCacher(ctrl)
-				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{}, errors.New("not valid item")).AnyTimes()
+				mockItemCacher.EXPECT().Save(entities.Item{ItemId: itemId}).AnyTimes()
+				mockItemCacher.EXPECT().Get(gomock.Any()).Return(anItem, errors.New("not valid item")).AnyTimes()
+				mockItemCacher.EXPECT().GetStrategy(gomock.Any()).Return(itemPostgresCache).AnyTimes()
+				mockItemCacher.EXPECT().SetStrategy(itemPostgresCache).AnyTimes()
 
-				itemService := item.NewItemService(itemHttpService, mockItemCacher)
+				itemService := appItem.NewItemService(itemHttpService, mockItemCacher, configService)
 
-				item := itemService.FetchItemById("xxx")
+				item := itemService.FetchItemById(itemId)
 
-				Expect(item.IsZero()).To(Equal(true))
+				Expect(item.IsZero()).To(Equal(false))
 			})
 		})
 
@@ -47,14 +59,20 @@ var _ = Describe("ItemHttpService", func() {
 			It("should return a not empty item", func() {
 				itemId := "yyy"
 				configs := config.NewConfig()
+				redis := redis2.NewRedis(configs)
+				postgres := postgres.NewPostgres(configs)
 				itemQueue := queue.NewItemQueue()
 				httpClient := http.NewHttpClient(configs, &itemQueue)
 				itemHttpService := http.NewItemHttpService(&httpClient)
+				configService := appConfig.NewConfigService(redis)
+				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
 
 				mockItemCacher := mocks.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: itemId}, nil).AnyTimes()
+				mockItemCacher.EXPECT().GetStrategy(gomock.Any()).Return(itemPostgresCache).AnyTimes()
+				mockItemCacher.EXPECT().SetStrategy(itemPostgresCache).AnyTimes()
 
-				itemService := item.NewItemService(itemHttpService, mockItemCacher)
+				itemService := appItem.NewItemService(itemHttpService, mockItemCacher, configService)
 
 				item := itemService.FetchItemById(itemId)
 
@@ -72,9 +90,13 @@ var _ = Describe("ItemHttpService", func() {
 				// dependencies
 				itemId := "yyy"
 				configs := config.NewConfig()
+				redis := redis2.NewRedis(configs)
+				postgres := postgres.NewPostgres(configs)
 				itemQueue := queue.NewItemQueue()
 				httpClient := http.NewHttpClient(configs, &itemQueue)
 				itemHttpService := http.NewItemHttpService(&httpClient)
+				configService := appConfig.NewConfigService(redis)
+				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
 
 				// httpserver mocks
 				itemChildrenPath := fmt.Sprintf(
@@ -90,9 +112,12 @@ var _ = Describe("ItemHttpService", func() {
 				mockItemCacher := mocks.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: ""}, nil).AnyTimes()
 				mockItemCacher.EXPECT().Save(gomock.Any()).Return(nil).AnyTimes()
+				mockItemCacher.EXPECT().SetStrategy(itemPostgresCache).AnyTimes()
+				mockItemCacher.EXPECT().GetStrategy(gomock.Any()).Return(itemPostgresCache).AnyTimes()
+				//mockItemCacher.SetStrategy(appConfig.PostgresStorage)
 
-				// service to test
-				itemService := item.NewItemService(itemHttpService, mockItemCacher)
+				// ItemService to test
+				itemService := appItem.NewItemService(itemHttpService, mockItemCacher, configService)
 				item := itemService.FetchItemById(itemId)
 
 				Expect(item).To(Not(Equal(item.IsZero())))

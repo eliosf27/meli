@@ -6,6 +6,7 @@ package mock_item
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	item "meli/internal/app/item"
 	entities "meli/internal/entities"
 	reflect "reflect"
 )
@@ -62,8 +63,86 @@ func (mr *MockItemCacherMockRecorder) Save(item interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockItemCacher)(nil).Save), item)
 }
 
+// SetStrategy mocks base method
+func (m *MockItemCacher) SetStrategy(strategy item.Cacher) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetStrategy", strategy)
+}
+
+// SetStrategy indicates an expected call of SetStrategy
+func (mr *MockItemCacherMockRecorder) SetStrategy(strategy interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetStrategy", reflect.TypeOf((*MockItemCacher)(nil).SetStrategy), strategy)
+}
+
+// GetStrategy mocks base method
+func (m *MockItemCacher) GetStrategy(storage string) item.Cacher {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStrategy", storage)
+	ret0, _ := ret[0].(item.Cacher)
+	return ret0
+}
+
+// GetStrategy indicates an expected call of GetStrategy
+func (mr *MockItemCacherMockRecorder) GetStrategy(storage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStrategy", reflect.TypeOf((*MockItemCacher)(nil).GetStrategy), storage)
+}
+
+// MockCacher is a mock of Cacher interface
+type MockCacher struct {
+	ctrl     *gomock.Controller
+	recorder *MockCacherMockRecorder
+}
+
+// MockCacherMockRecorder is the mock recorder for MockCacher
+type MockCacherMockRecorder struct {
+	mock *MockCacher
+}
+
+// NewMockCacher creates a new mock instance
+func NewMockCacher(ctrl *gomock.Controller) *MockCacher {
+	mock := &MockCacher{ctrl: ctrl}
+	mock.recorder = &MockCacherMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockCacher) EXPECT() *MockCacherMockRecorder {
+	return m.recorder
+}
+
+// Get mocks base method
+func (m *MockCacher) Get(Id string) (entities.Item, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", Id)
+	ret0, _ := ret[0].(entities.Item)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get
+func (mr *MockCacherMockRecorder) Get(Id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCacher)(nil).Get), Id)
+}
+
+// Save mocks base method
+func (m *MockCacher) Save(item entities.Item) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Save", item)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Save indicates an expected call of Save
+func (mr *MockCacherMockRecorder) Save(item interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockCacher)(nil).Save), item)
+}
+
 // MustApply mocks base method
-func (m *MockItemCacher) MustApply(strategy string) bool {
+func (m *MockCacher) MustApply(strategy string) bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MustApply", strategy)
 	ret0, _ := ret[0].(bool)
@@ -71,7 +150,21 @@ func (m *MockItemCacher) MustApply(strategy string) bool {
 }
 
 // MustApply indicates an expected call of MustApply
-func (mr *MockItemCacherMockRecorder) MustApply(strategy interface{}) *gomock.Call {
+func (mr *MockCacherMockRecorder) MustApply(strategy interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MustApply", reflect.TypeOf((*MockItemCacher)(nil).MustApply), strategy)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MustApply", reflect.TypeOf((*MockCacher)(nil).MustApply), strategy)
+}
+
+// Name mocks base method
+func (m *MockCacher) Name() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Name")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Name indicates an expected call of Name
+func (mr *MockCacherMockRecorder) Name() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Name", reflect.TypeOf((*MockCacher)(nil).Name))
 }
