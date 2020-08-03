@@ -13,13 +13,13 @@ import (
 )
 
 type Dependencies struct {
-	StatusHandler  appStatus.StatusHandler
-	ItemHandler    appItem.ItemHandler
-	MetricHandler  appMetric.MetricHandler
-	ConfigHandler  appConfig.ConfigHandler
-	Config         config.Config
-	Queue          *queue.ItemQueue
-	QueueConsumers []queue.Consumer
+	StatusHandler      appStatus.StatusHandler
+	ItemHandler        appItem.ItemHandler
+	MetricHandler      appMetric.MetricHandler
+	ConfigCacheHandler appConfig.ConfigCacheHandler
+	Config             config.Config
+	Queue              *queue.ItemQueue
+	QueueConsumers     []queue.Consumer
 }
 
 // Build build all the project dependencies
@@ -58,7 +58,7 @@ func Build() Dependencies {
 	dependencies.StatusHandler = appStatus.NewStatusHandler(configs)
 	dependencies.ItemHandler = appItem.NewItemHandle(configs, itemService)
 	dependencies.MetricHandler = appMetric.NewMetricHandler(configs, metricService)
-	dependencies.ConfigHandler = appConfig.NewConfigHandle(configService)
+	dependencies.ConfigCacheHandler = appConfig.NewConfigCacheHandle(configService)
 	dependencies.Config = configs
 	dependencies.Queue = &itemQueue
 	dependencies.QueueConsumers = append(dependencies.QueueConsumers, itemConsumer)
