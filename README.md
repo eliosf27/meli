@@ -116,4 +116,4 @@ storage like mongo. Only one metric is calculated at the time to keep the consis
 - I use redis and/or postgres to keep an item data in a cache to not fetching data from the mercadolibre api every single time.
 
 - I use toggle features to activate/deactivate a storage strategy for the cache. I create two endpoints to configure
-and check the configuration of the storage used to cache the item data. The default storage is postgres.
+and check the configuration of the storage used to cache the item data.
