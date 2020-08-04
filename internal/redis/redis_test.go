@@ -55,5 +55,45 @@ var _ = Describe("Redis", func() {
 				Expect(result).To(Equal(value))
 			})
 		})
+
+		When("saving data with a hset operation", func() {
+			It("should return a valid operation", func() {
+				connection := redisContainer.Up()
+
+				configs := config.NewConfig()
+				configs.Redis.RedisHost = connection.Host
+				configs.Redis.RedisPort = connection.Port
+
+				redis := NewRedis(configs)
+
+				key := "test_key"
+				field := "test_field"
+				value := []byte("test_value")
+				_, err := redis.HSet(key, field, value)
+				Expect(err).To(BeNil())
+			})
+		})
+
+		When("fetching data from a hget operation", func() {
+			It("should return a valid value", func() {
+				connection := redisContainer.Up()
+
+				configs := config.NewConfig()
+				configs.Redis.RedisHost = connection.Host
+				configs.Redis.RedisPort = connection.Port
+
+				redis := NewRedis(configs)
+
+				key := "test_key"
+				field := "test_field"
+				value := []byte("test_value")
+				_, err := redis.HSet(key, field, value)
+				Expect(err).To(BeNil())
+
+				result, err := redis.HGet(key, field)
+				Expect(err).To(BeNil())
+				Expect(result).To(Equal(value))
+			})
+		})
 	})
 })
