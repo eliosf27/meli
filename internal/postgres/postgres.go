@@ -89,7 +89,7 @@ func (p *Postgres) Execute(sql string, args ...interface{}) error {
 		return err
 	}
 
-	_, err = p.Client.Exec(query, args)
+	_, err = p.Client.Exec(query, args...)
 	if err != nil {
 
 		return err
@@ -108,23 +108,10 @@ func (p *Postgres) Query(sql string, params ...interface{}) (*sql.Rows, error) {
 		return nil, err
 	}
 
-	rows, err := p.Client.Query(query, params)
+	rows, err := p.Client.Query(query, params...)
 	if err != nil {
 		return nil, err
 	}
-
-	defer func() {
-		if err := rows.Close(); err != nil {
-			log.Errorf("Error closing rows: %+v", err)
-		}
-	}()
-
-	//for rows.Next() {
-	//	err := rows.Scan(values)
-	//	if err != nil {
-	//
-	//	}
-	//}
 
 	return rows, nil
 }

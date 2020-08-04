@@ -1,18 +1,16 @@
 package item
 
 import (
-	"database/sql"
 	log "github.com/sirupsen/logrus"
 	config "meli/internal/app/config"
 	"meli/internal/entities"
 	"meli/internal/postgres"
-	"meli/pkg/queries"
 )
 
 const (
-	InsertItem          = "insert_item"
-	InsertItemChildren  = "insert_item_children"
-	SelectItemsChildren = "select_items_children"
+	InsertItemQuery         = "insert_item"
+	InsertItemChildrenQuery = "insert_item_children"
+	SelectItemsChildren     = "select_items_children"
 )
 
 type ItemPostgresCache struct {
@@ -39,19 +37,14 @@ func (r ItemPostgresCache) Get(id string) (entities.Item, error) {
 }
 
 func (r ItemPostgresCache) Save(item entities.Item) error {
-	client := r.postgres.Client
-
-	tx, err := client.Begin()
-	if err != nil {
-		log.Errorf("ItemPostgresCache.SaveChildren | Error connecting to DB: %+v", err)
-
-		return err
-	}
-
-	err = r.save(tx, item)
+	err := r.postgres.Execute(
+		InsertItemQuery,
+		item.ItemId, item.Title, item.CategoryId,
+		item.Price, item.StartTime, item.StopTime,
+	)
 	if err != nil {
 		log.Errorf(
-			"ItemPostgresCache.save | item : %v"+
+			"ItemPostgresCache.Execute Item | item : %v"+
 				"Error executing insert: %+v", item, err,
 		)
 
@@ -59,21 +52,18 @@ func (r ItemPostgresCache) Save(item entities.Item) error {
 	}
 
 	for _, child := range item.Children {
-		err := r.saveChildren(tx, child)
+		err := r.postgres.Execute(
+			InsertItemChildrenQuery,
+			child.ItemId, child.StopTime,
+		)
 		if err != nil {
 			log.Errorf(
-				"ItemPostgresCache.saveChildren | child : %v"+
+				"ItemPostgresCache.Execute Item child | child : %v"+
 					"Error executing insert: %+v", child, err,
 			)
 
 			return err
 		}
-	}
-
-	if err := tx.Commit(); err != nil {
-		log.Errorf("ItemPostgresCache.SaveChildren | Error committing transaction: %s", err.Error())
-
-		return err
 	}
 
 	return nil
@@ -84,53 +74,8 @@ func (r ItemPostgresCache) Name() string {
 	return config.PostgresStorage
 }
 
-func (r ItemPostgresCache) save(tx *sql.Tx, item entities.Item) error {
-	query, err := queries.ReadQuery(InsertItem)
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.Exec(query,
-		item.ItemId, item.Title, item.CategoryId,
-		item.Price, item.StartTime, item.StopTime,
-	)
-	if err != nil {
-		tx.Rollback()
-
-		return err
-	}
-
-	return nil
-}
-
-func (r ItemPostgresCache) saveChildren(tx *sql.Tx, itemChildren entities.ItemChildren) error {
-	query, err := queries.ReadQuery(InsertItemChildren)
-	if err != nil {
-
-		return err
-	}
-	_, err = tx.Exec(query,
-		itemChildren.ItemId, itemChildren.StopTime,
-	)
-	if err != nil {
-		tx.Rollback()
-
-		return err
-	}
-
-	return nil
-}
-
 func (r ItemPostgresCache) getItem(id string) (entities.Item, error) {
-	client := r.postgres.Client
-	query, err := queries.ReadQuery(SelectItemsChildren)
-	if err != nil {
-		log.Errorf("ItemPostgresCache.SaveChildren | Error reading query: %+v", err)
-
-		return entities.Item{}, err
-	}
-
-	rows, err := client.Query(query, id)
+	rows, err := r.postgres.Query(SelectItemsChildren, id)
 	if err != nil {
 
 		return entities.Item{}, err
