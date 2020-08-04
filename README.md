@@ -78,4 +78,4 @@
             
         - Run the migrations
             
-            make run
+            make migrations
