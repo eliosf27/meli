@@ -3,36 +3,33 @@ package item_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	log "github.com/sirupsen/logrus"
 	"meli/internal/app/item"
 	mocks "meli/internal/mocks"
-	pg "meli/internal/postgres"
+	"meli/internal/redis"
 	config "meli/pkg/config"
 	"meli/pkg/testcontainers"
 )
 
-var _ = Describe("ItemPostgresCache", func() {
-	var container testcontainers.PostgresContainer
+var _ = Describe("ItemRedisCache", func() {
+	var container testcontainers.RedisContainer
 	BeforeEach(func() {
-		container = testcontainers.NewPostgresContainer()
+		container = testcontainers.NewRedisContainer()
 	})
 	AfterEach(func() {
 		_ = container.Down()
 	})
 
-	Context("calling the item postgres cache", func() {
+	Context("calling the item redis cache", func() {
 		When("the item is saving", func() {
 			It("should return a valid operation", func() {
 				connection := container.Up()
 
 				configs := config.NewConfig()
-				configs.Postgres.ItemsConnection = connection.ConnectionString
+				configs.Redis.RedisHost = connection.Host
+				configs.Redis.RedisPort = connection.Port
 
-				postgres := pg.NewPostgres(configs)
-				postgres.RunMigrations()
-
-				repository := item.NewItemPostgresCache(postgres)
-				log.Info(repository)
+				redis := redis.NewRedis(configs)
+				repository := item.NewItemRedisCache(redis)
 
 				err := repository.Save(mocks.MockItem("xxx"))
 
@@ -46,13 +43,11 @@ var _ = Describe("ItemPostgresCache", func() {
 				connection := container.Up()
 
 				configs := config.NewConfig()
-				configs.Postgres.ItemsConnection = connection.ConnectionString
+				configs.Redis.RedisHost = connection.Host
+				configs.Redis.RedisPort = connection.Port
 
-				postgres := pg.NewPostgres(configs)
-				postgres.RunMigrations()
-
-				repository := item.NewItemPostgresCache(postgres)
-				log.Info(repository)
+				redis := redis.NewRedis(configs)
+				repository := item.NewItemRedisCache(redis)
 
 				err := repository.Save(mocks.MockItem(itemId))
 				Expect(err).To(BeNil())
@@ -70,13 +65,11 @@ var _ = Describe("ItemPostgresCache", func() {
 				connection := container.Up()
 
 				configs := config.NewConfig()
-				configs.Postgres.ItemsConnection = connection.ConnectionString
+				configs.Redis.RedisHost = connection.Host
+				configs.Redis.RedisPort = connection.Port
 
-				postgres := pg.NewPostgres(configs)
-				postgres.RunMigrations()
-
-				repository := item.NewItemPostgresCache(postgres)
-				log.Info(repository)
+				redis := redis.NewRedis(configs)
+				repository := item.NewItemRedisCache(redis)
 
 				mockItem := mocks.MockItem(itemId)
 				mockItem.Children = mocks.MockItemChildren(itemId)

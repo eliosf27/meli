@@ -1,6 +1,7 @@
 package item
 
 import (
+	"errors"
 	"meli/internal/entities"
 )
 
@@ -34,11 +35,19 @@ func NewItemCache(redisCache Cacher, postgresCache Cacher) *ItemCache {
 }
 
 func (c *ItemCache) Get(id string) (entities.Item, error) {
-	return c.strategy.Get(id)
+	if c.strategy != nil {
+		return c.strategy.Get(id)
+	}
+
+	return entities.Item{}, errors.New("strategy not configured")
 }
 
 func (c *ItemCache) Save(item entities.Item) error {
-	return c.strategy.Save(item)
+	if c.strategy != nil {
+		return c.strategy.Save(item)
+	}
+
+	return errors.New("strategy not configured")
 }
 
 func (c *ItemCache) GetStrategy(storage string) Cacher {

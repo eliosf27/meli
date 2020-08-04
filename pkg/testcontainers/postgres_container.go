@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	port     = "5432"
-	user     = "docker"
-	password = "docker"
-	database = "items_test"
+	postgresPort     = "5432"
+	postgresUser     = "docker"
+	postgresPassword = "docker"
+	postgresDatabase = "items_test"
 )
 
 type PostgresConnection struct {
@@ -36,12 +36,12 @@ func NewPostgresContainer() PostgresContainer {
 func (c PostgresContainer) Up() PostgresConnection {
 	containerRequest := testcontainers.ContainerRequest{
 		Image:        "postgres",
-		ExposedPorts: []string{fmt.Sprintf("%s/tcp", port)},
-		WaitingFor:   wait.ForListeningPort(port),
+		ExposedPorts: []string{fmt.Sprintf("%s/tcp", postgresPort)},
+		WaitingFor:   wait.ForListeningPort(postgresPort),
 		Env: map[string]string{
-			"POSTGRES_USER":     user,
-			"POSTGRES_PASSWORD": password,
-			"POSTGRES_DB":       database,
+			"POSTGRES_USER":     postgresUser,
+			"POSTGRES_PASSWORD": postgresPassword,
+			"POSTGRES_DB":       postgresDatabase,
 		},
 	}
 	container, err := testcontainers.GenericContainer(context.Background(), testcontainers.GenericContainerRequest{
@@ -55,15 +55,18 @@ func (c PostgresContainer) Up() PostgresConnection {
 	c.Container = container
 
 	containerHost, _ := container.Host(context.Background())
-	containerPort, _ := container.MappedPort(context.Background(), port)
+	containerPort, _ := container.MappedPort(context.Background(), postgresPort)
 	connectionString := "postgres://%s:%s@%s:%s/%s"
 
 	return PostgresConnection{
-		Host:             containerHost,
-		Port:             containerPort.Port(),
-		User:             user,
-		Password:         password,
-		ConnectionString: fmt.Sprintf(connectionString, user, password, containerHost, containerPort.Port(), database),
+		Host:     containerHost,
+		Port:     containerPort.Port(),
+		User:     postgresUser,
+		Password: postgresPassword,
+		ConnectionString: fmt.Sprintf(
+			connectionString, postgresUser, postgresPassword,
+			containerHost, containerPort.Port(), postgresDatabase,
+		),
 	}
 }
 
