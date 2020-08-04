@@ -11,6 +11,7 @@ import (
 type ItemQueue struct {
 	items []entities.ItemMetric
 	lock  sync.RWMutex
+	stop  bool
 }
 
 // NewItemQueue creates a new ItemQueue
@@ -42,9 +43,18 @@ func (s *ItemQueue) IsEmpty() bool {
 	return len(s.items) == 0
 }
 
+// IsEmpty stop the listener
+func (s *ItemQueue) Stop() {
+	s.stop = true
+}
+
 // Listen check and process an item every n seconds
 func (s *ItemQueue) Listen(callback func(item entities.ItemMetric) error) {
 	for {
+		if s.stop {
+			break
+		}
+
 		time.Sleep(1 * time.Second)
 
 		if s.IsEmpty() {

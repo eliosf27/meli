@@ -5,14 +5,8 @@ import (
 	. "github.com/onsi/gomega"
 	config "meli/pkg/config"
 	"meli/pkg/testcontainers"
-	"testing"
 	"time"
 )
-
-func TestItem2222(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Item Suite")
-}
 
 var _ = Describe("Redis", func() {
 	var redisContainer testcontainers.RedisContainer
