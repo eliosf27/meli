@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"meli/internal/app/item"
 	"meli/internal/entities"
-	mocks "meli/internal/mocks"
+	itemMocks "meli/internal/mocks/item"
 	config "meli/pkg/config"
 	"net/http"
 	"net/http/httptest"
@@ -27,7 +27,7 @@ var _ = Describe("ItemHandler", func() {
 			It("should return an error response", func() {
 				configs := config.NewConfig()
 
-				mockService := mocks.NewMockItemService(ctrl)
+				mockService := itemMocks.NewMockItemService(ctrl)
 				mockService.EXPECT().FetchItemById(gomock.Any()).Return(entities.Item{}).AnyTimes()
 
 				itemController := item.NewItemHandle(configs, mockService)
@@ -43,28 +43,6 @@ var _ = Describe("ItemHandler", func() {
 
 				Expect(err).To(Not(Equal(nil)))
 				Expect(err.Error()).To(Equal("code=400, message=invalid item id"))
-			})
-		})
-
-		When("the item_is is not empty", func() {
-			It("should return an successful response", func() {
-				configs := config.NewConfig()
-
-				mockService := mocks.NewMockItemService(ctrl)
-				mockService.EXPECT().FetchItemById(gomock.Any()).Return(entities.Item{}).AnyTimes()
-
-				itemController := item.NewItemHandle(configs, mockService)
-
-				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
-				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
-				c.SetPath("/items/:item_id")
-				c.SetParamNames("item_id")
-				c.SetParamValues("MLU460998489")
-				err := itemController.Get(c)
-
-				Expect(err).To(BeNil())
 			})
 		})
 	})

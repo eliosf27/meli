@@ -41,7 +41,7 @@ var _ = Describe("ItemHttpService", func() {
 
 				itemId := "jjj"
 				anItem := entities.Item{}
-				mockItemCacher := mocks.NewMockItemCacher(ctrl)
+				mockItemCacher := mocksPkg.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Save(entities.Item{ItemId: itemId}).AnyTimes()
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(anItem, errors.New("not valid item")).AnyTimes()
 				mockItemCacher.EXPECT().GetStrategy(gomock.Any()).Return(itemPostgresCache).AnyTimes()
@@ -67,7 +67,7 @@ var _ = Describe("ItemHttpService", func() {
 				configService := appConfig.NewConfigService(redis)
 				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
 
-				mockItemCacher := mocks.NewMockItemCacher(ctrl)
+				mockItemCacher := mocksPkg.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: itemId}, nil).AnyTimes()
 				mockItemCacher.EXPECT().GetStrategy(gomock.Any()).Return(itemPostgresCache).AnyTimes()
 				mockItemCacher.EXPECT().SetStrategy(itemPostgresCache).AnyTimes()
@@ -109,7 +109,7 @@ var _ = Describe("ItemHttpService", func() {
 				httpMock.Get(itemChildrenPath, mocks.MockItemChildren(itemId))
 
 				// repository mocks
-				mockItemCacher := mocks.NewMockItemCacher(ctrl)
+				mockItemCacher := mocksPkg.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: ""}, nil).AnyTimes()
 				mockItemCacher.EXPECT().Save(gomock.Any()).Return(nil).AnyTimes()
 				mockItemCacher.EXPECT().SetStrategy(itemPostgresCache).AnyTimes()

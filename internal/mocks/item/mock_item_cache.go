@@ -2,7 +2,7 @@
 // Source: internal/app/item/item_cache.go
 
 // Package mock_item is a generated GoMock package.
-package mock_item
+package item
 
 import (
 	gomock "github.com/golang/mock/gomock"

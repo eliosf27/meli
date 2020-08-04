@@ -1,4 +1,4 @@
-package mock_item
+package item
 
 import "meli/internal/entities"
 
