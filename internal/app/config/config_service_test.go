@@ -6,13 +6,7 @@ import (
 	"meli/internal/redis"
 	config "meli/pkg/config"
 	"meli/pkg/testcontainers"
-	"testing"
 )
-
-func TestIte4545454m(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Item Suite")
-}
 
 var _ = Describe("ItemRedisCache", func() {
 	var container testcontainers.RedisContainer
