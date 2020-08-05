@@ -13,7 +13,7 @@ const (
 )
 
 type ItemMetrics struct {
-	ResponsesTime slice.SliceInt64
+	ResponsesTime slice.Int64
 	StatusCode    map[int]int64
 	Time          time.Time
 }

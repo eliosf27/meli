@@ -1,8 +1,8 @@
 package slice
 
-type SliceInt64 []int64
+type Int64 []int64
 
-func (s SliceInt64) Avg() float64 {
+func (s Int64) Avg() float64 {
 	if s.Count() == 0 {
 		return 0
 	}
@@ -10,12 +10,12 @@ func (s SliceInt64) Avg() float64 {
 	return s.Sum() / float64(s.Count())
 }
 
-func (s SliceInt64) Count() int64 {
+func (s Int64) Count() int64 {
 
 	return int64(len(s))
 }
 
-func (s SliceInt64) Sum() float64 {
+func (s Int64) Sum() float64 {
 	total := 0.0
 
 	for _, val := range s {

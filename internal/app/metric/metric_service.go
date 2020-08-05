@@ -133,7 +133,7 @@ func (s *MetricService) save(key string, field string, metrics map[string]entiti
 
 func (s *MetricService) calculate(item entities.ItemMetric, metrics map[string]entities.ItemMetrics) map[string]entities.ItemMetrics {
 	metric := entities.ItemMetrics{
-		ResponsesTime: slice.SliceInt64{},
+		ResponsesTime: slice.Int64{},
 		StatusCode:    map[int]int64{},
 		Time:          item.Time,
 	}
