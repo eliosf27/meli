@@ -55,9 +55,6 @@ things about [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/
 
                 docker run --network="host" --env-file config/.env -it meli-migrations
 
-    Script:
-
-        ./scripts/run_migrations.sh
 
 ### Environment Variables
 
