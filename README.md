@@ -38,6 +38,15 @@ Docker:
       
     docker run -it --env-file config/.env -p 8000:8000 --restart=always --name=meli meli
       
+docker-compose
+
+    Run project
+    
+        docker-compose -f docker-compose.db.yml -f docker-compose.yml up --build
+         
+    Run migrations
+        
+        docker-compose -f docker-compose.db.yml -f docker-compose.migrations.yml up
 
 ### Update dependencies vendor dir (Try to not use this command unless is strictly necessary)
     
@@ -77,16 +86,6 @@ Docker:
     Run tests
     
         export $(cat config/.env.testing | grep -v ^# | xargs) && go test ./... -coverprofile=coverage.out
-    
-### docker-compose
-
-    Run project
-    
-        docker-compose -f docker-compose.db.yml -f docker-compose.yml up --build
-         
-    Run migrations
-        
-        docker-compose -f docker-compose.db.yml -f docker-compose.migrations.yml up
         
 ### Scripts
     - Enter in the scripts directory
