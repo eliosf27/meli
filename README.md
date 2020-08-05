@@ -28,15 +28,15 @@ things about [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/
 
 ### Run
 
-- Locally
+Locally:
 
-    $ go run server.go
+    go run server.go
 
-- Docker
+Docker:
 
-    $ docker build --env-file config/.env --force-rm -t meli .
+    docker build --env-file config/.env --force-rm -t meli .
       
-    $ docker run -it --env-file config/.env -p 8000:8000 --restart=always --name=meli meli
+    docker run -it --env-file config/.env -p 8000:8000 --restart=always --name=meli meli
       
 
 ### Update dependencies vendor dir (Try to not use this command unless is strictly necessary)
