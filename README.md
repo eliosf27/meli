@@ -104,6 +104,25 @@ things about [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/
     - Run the migrations
             
         make migrations
+  
+# Technologies
+
+- [echo golang framework](https://echo.labstack.com/)
+- [redis](https://redis.io/)
+- [postgres](https://www.postgresql.org/docs/12/index.html)
+- [docker](https://www.docker.com/)
+- [docker-compose](https://docs.docker.com/compose/)
+- [gomock](https://github.com/golang/mock)
+- [gomega](https://onsi.github.io/gomega/)
+- [test-containers](https://www.testcontainers.org/)
+- [ginkgo](https://github.com/onsi/ginkgo)
+- [sling-http-client](https://github.com/dghubble/sling)
+
+# Documentation
+
+- You can find the documentation and diagrams in the documentation directory in the root of the project
+
+/documentation
         
 # Improves/Comments
 
@@ -114,3 +133,6 @@ storage like mongo. Only one metric is calculated at the time to keep the consis
 
 - I use toggle features to activate/deactivate a storage strategy for the cache. I create two endpoints to configure
 and check the configuration of the storage used to cache the item data. The default storage is postgres.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
