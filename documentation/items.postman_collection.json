@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "518157a9-d206-4f23-a2c2-5ccd88055822",
+		"name": "items",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "external - items by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.mercadolibre.com/items/MLU460998489",
+					"protocol": "https",
+					"host": [
+						"api",
+						"mercadolibre",
+						"com"
+					],
+					"path": [
+						"items",
+						"MLU460998489"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "external - items children by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.mercadolibre.com/items/MLU460998489/children",
+					"protocol": "https",
+					"host": [
+						"api",
+						"mercadolibre",
+						"com"
+					],
+					"path": [
+						"items",
+						"MLU460998489",
+						"children"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "meli - status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "meli - health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "meli - fetch item by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/items/MLU460998489",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"items",
+						"MLU460998489"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "meli - fetch config cache",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/config/cache/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"config",
+						"cache",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "meli - save config cache",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"storage\": \"redis\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/config/cache/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"config",
+						"cache",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
