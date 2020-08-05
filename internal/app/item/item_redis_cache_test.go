@@ -3,8 +3,8 @@ package item_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"meli/internal/app/item"
-	mocks "meli/internal/mocks"
+	itemApp "meli/internal/app/item"
+	itemMocks "meli/internal/mocks/item"
 	"meli/internal/redis"
 	config "meli/pkg/config"
 	"meli/pkg/testcontainers"
@@ -29,9 +29,9 @@ var _ = Describe("ItemRedisCache", func() {
 				configs.Redis.RedisPort = connection.Port
 
 				redis := redis.NewRedis(configs)
-				repository := item.NewItemRedisCache(redis)
+				repository := itemApp.NewItemRedisCache(redis)
 
-				err := repository.Save(mocks.MockItem("xxx"))
+				err := repository.Save(itemMocks.MockItem("xxx"))
 
 				Expect(err).To(BeNil())
 			})
@@ -47,9 +47,9 @@ var _ = Describe("ItemRedisCache", func() {
 				configs.Redis.RedisPort = connection.Port
 
 				redis := redis.NewRedis(configs)
-				repository := item.NewItemRedisCache(redis)
+				repository := itemApp.NewItemRedisCache(redis)
 
-				err := repository.Save(mocks.MockItem(itemId))
+				err := repository.Save(itemMocks.MockItem(itemId))
 				Expect(err).To(BeNil())
 
 				item, err := repository.Get(itemId)
@@ -69,10 +69,10 @@ var _ = Describe("ItemRedisCache", func() {
 				configs.Redis.RedisPort = connection.Port
 
 				redis := redis.NewRedis(configs)
-				repository := item.NewItemRedisCache(redis)
+				repository := itemApp.NewItemRedisCache(redis)
 
-				mockItem := mocks.MockItem(itemId)
-				mockItem.Children = mocks.MockItemChildren(itemId)
+				mockItem := itemMocks.MockItem(itemId)
+				mockItem.Children = itemMocks.MockItemChildren(itemId)
 				err := repository.Save(mockItem)
 				Expect(err).To(BeNil())
 

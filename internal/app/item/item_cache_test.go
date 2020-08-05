@@ -3,11 +3,11 @@ package item_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appItem "meli/internal/app/item"
-	mocks "meli/internal/mocks"
+	itemApp "meli/internal/app/item"
+	itemMocks "meli/internal/mocks/item"
 	pg "meli/internal/postgres"
 	"meli/internal/redis"
-	config "meli/pkg/config"
+	configPkg "meli/pkg/config"
 	"meli/pkg/testcontainers"
 )
 
@@ -28,7 +28,7 @@ var _ = Describe("ItemCache", func() {
 			It("should use a default strategy and return valid values from postgres cache", func() {
 				connection := postgresContainer.Up()
 
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 				configs.Postgres.ItemsConnection = connection.ConnectionString
 
 				postgres := pg.NewPostgres(configs)
@@ -37,10 +37,10 @@ var _ = Describe("ItemCache", func() {
 				redis := redis.NewRedis(configs)
 
 				itemId := "xxx"
-				item := mocks.MockItem(itemId)
-				itemRedisCache := appItem.NewItemRedisCache(redis)
-				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
-				itemCache := appItem.NewItemCache(itemRedisCache, itemPostgresCache)
+				item := itemMocks.MockItem(itemId)
+				itemRedisCache := itemApp.NewItemRedisCache(redis)
+				itemPostgresCache := itemApp.NewItemPostgresCache(postgres)
+				itemCache := itemApp.NewItemCache(itemRedisCache, itemPostgresCache)
 
 				itemCache.SetStrategy(itemCache.GetStrategy("xxx"))
 				err := itemCache.Save(item)
@@ -57,16 +57,16 @@ var _ = Describe("ItemCache", func() {
 			It("should return valid values from cache", func() {
 				connection := postgresContainer.Up()
 
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 				configs.Postgres.ItemsConnection = connection.ConnectionString
 
 				postgres := pg.NewPostgres(configs)
 				postgres.RunMigrations()
 
 				itemId := "xxx"
-				item := mocks.MockItem(itemId)
-				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
-				itemCache := appItem.NewItemCache(nil, itemPostgresCache)
+				item := itemMocks.MockItem(itemId)
+				itemPostgresCache := itemApp.NewItemPostgresCache(postgres)
+				itemCache := itemApp.NewItemCache(nil, itemPostgresCache)
 
 				itemCache.SetStrategy(itemPostgresCache)
 				err := itemCache.Save(item)
@@ -83,16 +83,16 @@ var _ = Describe("ItemCache", func() {
 			It("should return valid values from cache", func() {
 				connection := redisContainer.Up()
 
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 				configs.Redis.RedisHost = connection.Host
 				configs.Redis.RedisPort = connection.Port
 
 				redis := redis.NewRedis(configs)
 
 				itemId := "xxx"
-				item := mocks.MockItem(itemId)
-				itemRedisCache := appItem.NewItemRedisCache(redis)
-				itemCache := appItem.NewItemCache(nil, itemRedisCache)
+				item := itemMocks.MockItem(itemId)
+				itemRedisCache := itemApp.NewItemRedisCache(redis)
+				itemCache := itemApp.NewItemCache(nil, itemRedisCache)
 
 				itemCache.SetStrategy(itemRedisCache)
 				err := itemCache.Save(item)

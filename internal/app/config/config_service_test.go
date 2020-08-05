@@ -4,11 +4,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"meli/internal/redis"
-	config "meli/pkg/config"
+	configPkg "meli/pkg/config"
 	"meli/pkg/testcontainers"
 )
 
-var _ = Describe("ItemRedisCache", func() {
+var _ = Describe("ConfigService", func() {
 	var container testcontainers.RedisContainer
 	BeforeEach(func() {
 		container = testcontainers.NewRedisContainer()
@@ -22,7 +22,7 @@ var _ = Describe("ItemRedisCache", func() {
 			It("should return a valid operation", func() {
 				connection := container.Up()
 
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 				configs.Redis.RedisHost = connection.Host
 				configs.Redis.RedisPort = connection.Port
 
@@ -43,7 +43,7 @@ var _ = Describe("ItemRedisCache", func() {
 			It("should return an error", func() {
 				connection := container.Up()
 
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 				configs.Redis.RedisHost = connection.Host
 				configs.Redis.RedisPort = connection.Port
 
@@ -61,7 +61,7 @@ var _ = Describe("ItemRedisCache", func() {
 			It("should return a valid operation", func() {
 				connection := container.Up()
 
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 				configs.Redis.RedisHost = connection.Host
 				configs.Redis.RedisPort = connection.Port
 
@@ -77,7 +77,7 @@ var _ = Describe("ItemRedisCache", func() {
 			It("should return a valid operation", func() {
 				connection := container.Up()
 
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 				configs.Redis.RedisHost = connection.Host
 				configs.Redis.RedisPort = connection.Port
 

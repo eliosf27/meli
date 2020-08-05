@@ -17,6 +17,7 @@ func (s *Server) Routes() {
 	cache := s.server.Group("/config/cache")
 	cache.GET("/", s.dependencies.ConfigCacheHandler.Fetch)
 	cache.PUT("/", s.dependencies.ConfigCacheHandler.Update)
+
 }
 
 // Tracking track and save the local requests

@@ -5,10 +5,10 @@ import (
 	"github.com/labstack/echo/v4"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"meli/internal/app/item"
+	itemApp "meli/internal/app/item"
 	"meli/internal/entities"
 	itemMocks "meli/internal/mocks/item"
-	config "meli/pkg/config"
+	configPkg "meli/pkg/config"
 	"net/http"
 	"net/http/httptest"
 )
@@ -25,12 +25,12 @@ var _ = Describe("ItemHandler", func() {
 	Context("calling the item controller", func() {
 		When("the item_is is empty", func() {
 			It("should return an error response", func() {
-				configs := config.NewConfig()
+				configs := configPkg.NewConfig()
 
 				mockService := itemMocks.NewMockItemService(ctrl)
 				mockService.EXPECT().FetchItemById(gomock.Any()).Return(entities.Item{}).AnyTimes()
 
-				itemController := item.NewItemHandle(configs, mockService)
+				itemHandle := itemApp.NewItemHandle(configs, mockService)
 
 				e := echo.New()
 				req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -39,7 +39,7 @@ var _ = Describe("ItemHandler", func() {
 				c.SetPath("/items/:item_id")
 				c.SetParamNames("item_id")
 				c.SetParamValues("")
-				err := itemController.Get(c)
+				err := itemHandle.Get(c)
 
 				Expect(err).To(Not(Equal(nil)))
 				Expect(err.Error()).To(Equal("code=400, message=invalid item id"))

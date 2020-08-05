@@ -10,7 +10,7 @@ import (
 	appItem "meli/internal/app/item"
 	"meli/internal/entities"
 	"meli/internal/http"
-	mocks "meli/internal/mocks"
+	itemMocks "meli/internal/mocks/item"
 	"meli/internal/postgres"
 	"meli/internal/queue"
 	redis2 "meli/internal/redis"
@@ -18,7 +18,7 @@ import (
 	mocksPkg "meli/pkg/mocks"
 )
 
-var _ = Describe("ItemHttpService", func() {
+var _ = Describe("ItemService", func() {
 	var ctrl *gomock.Controller
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
@@ -41,7 +41,7 @@ var _ = Describe("ItemHttpService", func() {
 
 				itemId := "jjj"
 				anItem := entities.Item{}
-				mockItemCacher := mocksPkg.NewMockItemCacher(ctrl)
+				mockItemCacher := itemMocks.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Save(entities.Item{ItemId: itemId}).AnyTimes()
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(anItem, errors.New("not valid item")).AnyTimes()
 				mockItemCacher.EXPECT().GetStrategy(gomock.Any()).Return(itemPostgresCache).AnyTimes()
@@ -67,7 +67,7 @@ var _ = Describe("ItemHttpService", func() {
 				configService := appConfig.NewConfigService(redis)
 				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
 
-				mockItemCacher := mocksPkg.NewMockItemCacher(ctrl)
+				mockItemCacher := itemMocks.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: itemId}, nil).AnyTimes()
 				mockItemCacher.EXPECT().GetStrategy(gomock.Any()).Return(itemPostgresCache).AnyTimes()
 				mockItemCacher.EXPECT().SetStrategy(itemPostgresCache).AnyTimes()
@@ -98,18 +98,18 @@ var _ = Describe("ItemHttpService", func() {
 				configService := appConfig.NewConfigService(redis)
 				itemPostgresCache := appItem.NewItemPostgresCache(postgres)
 
-				// httpserver mocks
+				// httpserver itemMocks
 				itemChildrenPath := fmt.Sprintf(
 					"%s%s", configs.BaseEndpoint, itemHttpService.GetItemChildrenPath(itemId),
 				)
 				itemPath := fmt.Sprintf(
 					"%s%s", configs.BaseEndpoint, itemHttpService.GetItemPath(itemId),
 				)
-				httpMock.Get(itemPath, mocks.MockItem(itemId))
-				httpMock.Get(itemChildrenPath, mocks.MockItemChildren(itemId))
+				httpMock.Get(itemPath, itemMocks.MockItem(itemId))
+				httpMock.Get(itemChildrenPath, itemMocks.MockItemChildren(itemId))
 
-				// repository mocks
-				mockItemCacher := mocksPkg.NewMockItemCacher(ctrl)
+				// repository itemMocks
+				mockItemCacher := itemMocks.NewMockItemCacher(ctrl)
 				mockItemCacher.EXPECT().Get(gomock.Any()).Return(entities.Item{ItemId: ""}, nil).AnyTimes()
 				mockItemCacher.EXPECT().Save(gomock.Any()).Return(nil).AnyTimes()
 				mockItemCacher.EXPECT().SetStrategy(itemPostgresCache).AnyTimes()

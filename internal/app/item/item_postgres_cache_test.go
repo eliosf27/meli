@@ -4,8 +4,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	log "github.com/sirupsen/logrus"
-	"meli/internal/app/item"
-	mocks "meli/internal/mocks"
+	itemApp "meli/internal/app/item"
+	itemMocks "meli/internal/mocks/item"
 	pg "meli/internal/postgres"
 	config "meli/pkg/config"
 	"meli/pkg/testcontainers"
@@ -31,10 +31,10 @@ var _ = Describe("ItemPostgresCache", func() {
 				postgres := pg.NewPostgres(configs)
 				postgres.RunMigrations()
 
-				repository := item.NewItemPostgresCache(postgres)
+				repository := itemApp.NewItemPostgresCache(postgres)
 				log.Info(repository)
 
-				err := repository.Save(mocks.MockItem("xxx"))
+				err := repository.Save(itemMocks.MockItem("xxx"))
 
 				Expect(err).To(BeNil())
 			})
@@ -51,10 +51,10 @@ var _ = Describe("ItemPostgresCache", func() {
 				postgres := pg.NewPostgres(configs)
 				postgres.RunMigrations()
 
-				repository := item.NewItemPostgresCache(postgres)
+				repository := itemApp.NewItemPostgresCache(postgres)
 				log.Info(repository)
 
-				err := repository.Save(mocks.MockItem(itemId))
+				err := repository.Save(itemMocks.MockItem(itemId))
 				Expect(err).To(BeNil())
 
 				item, err := repository.Get(itemId)
@@ -75,11 +75,11 @@ var _ = Describe("ItemPostgresCache", func() {
 				postgres := pg.NewPostgres(configs)
 				postgres.RunMigrations()
 
-				repository := item.NewItemPostgresCache(postgres)
+				repository := itemApp.NewItemPostgresCache(postgres)
 				log.Info(repository)
 
-				mockItem := mocks.MockItem(itemId)
-				mockItem.Children = mocks.MockItemChildren(itemId)
+				mockItem := itemMocks.MockItem(itemId)
+				mockItem.Children = itemMocks.MockItemChildren(itemId)
 				err := repository.Save(mockItem)
 				Expect(err).To(BeNil())
 
