@@ -12,10 +12,10 @@ type MetricHandler interface {
 
 type MetricHandle struct {
 	config        config.Config
-	metricService MetricService
+	metricService MetricServicer
 }
 
-func NewMetricHandler(Config config.Config, ItemService MetricService) MetricHandler {
+func NewMetricHandler(Config config.Config, ItemService MetricServicer) MetricHandler {
 	return MetricHandle{
 		config:        Config,
 		metricService: ItemService,

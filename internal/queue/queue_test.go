@@ -4,14 +4,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"meli/internal/entities"
-	"testing"
 	"time"
 )
-
-func TestItem2222(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Item Suite")
-}
 
 var _ = Describe("Queue", func() {
 	Context("using a queue", func() {

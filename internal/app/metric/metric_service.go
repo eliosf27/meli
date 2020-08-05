@@ -10,20 +10,20 @@ import (
 
 const MetricsKey = "meli:metrics"
 
-type MetricService interface {
+type MetricServicer interface {
 	UpdateMetric(item entities.ItemMetric) error
 	FetchMetrics() []entities.ItemMetricResponse
 }
 
-type service struct {
+type MetricService struct {
 	redis redis.Redis
 }
 
-func NewMetricService(redis redis.Redis) MetricService {
-	return &service{redis: redis}
+func NewMetricService(redis redis.Redis) MetricServicer {
+	return &MetricService{redis: redis}
 }
 
-func (s *service) UpdateMetric(item entities.ItemMetric) error {
+func (s *MetricService) UpdateMetric(item entities.ItemMetric) error {
 	key := MetricsKey
 	field := item.Field()
 	metrics, _ := s.fetch(key, field)
@@ -32,7 +32,7 @@ func (s *service) UpdateMetric(item entities.ItemMetric) error {
 	return s.save(key, field, metrics)
 }
 
-func (s *service) FetchMetrics() []entities.ItemMetricResponse {
+func (s *MetricService) FetchMetrics() []entities.ItemMetricResponse {
 	metricsMap, err := s.redis.HGetAll(MetricsKey)
 	if err != nil {
 		log.Errorf("error getting all metrics [%s] - %+v", MetricsKey, err)
@@ -43,7 +43,7 @@ func (s *service) FetchMetrics() []entities.ItemMetricResponse {
 	return s.buildMetrics(metricsMap)
 }
 
-func (s *service) buildMetrics(metricsMap map[string]string) []entities.ItemMetricResponse {
+func (s *MetricService) buildMetrics(metricsMap map[string]string) []entities.ItemMetricResponse {
 	var responses []entities.ItemMetricResponse
 
 	for _, val := range metricsMap {
@@ -78,7 +78,7 @@ func (s *service) buildMetrics(metricsMap map[string]string) []entities.ItemMetr
 	return responses
 }
 
-func (s *service) buildInfo(statusCodes map[int]int64) []entities.InfoRequest {
+func (s *MetricService) buildInfo(statusCodes map[int]int64) []entities.InfoRequest {
 	var infos []entities.InfoRequest
 
 	for statusCode, count := range statusCodes {
@@ -93,7 +93,7 @@ func (s *service) buildInfo(statusCodes map[int]int64) []entities.InfoRequest {
 	return infos
 }
 
-func (s *service) fetch(key string, field string) (map[string]entities.ItemMetrics, error) {
+func (s *MetricService) fetch(key string, field string) (map[string]entities.ItemMetrics, error) {
 	metrics := map[string]entities.ItemMetrics{}
 	val, err := s.redis.HGet(key, field)
 	if err != nil {
@@ -111,7 +111,7 @@ func (s *service) fetch(key string, field string) (map[string]entities.ItemMetri
 	return metrics, nil
 }
 
-func (s *service) save(key string, field string, metrics map[string]entities.ItemMetrics) error {
+func (s *MetricService) save(key string, field string, metrics map[string]entities.ItemMetrics) error {
 	metricsRaw, err := json.Marshal(&metrics)
 	if err != nil {
 		log.Errorf(
@@ -131,7 +131,7 @@ func (s *service) save(key string, field string, metrics map[string]entities.Ite
 	return nil
 }
 
-func (s *service) calculate(item entities.ItemMetric, metrics map[string]entities.ItemMetrics) map[string]entities.ItemMetrics {
+func (s *MetricService) calculate(item entities.ItemMetric, metrics map[string]entities.ItemMetrics) map[string]entities.ItemMetrics {
 	metric := entities.ItemMetrics{
 		ResponsesTime: slice.SliceInt64{},
 		StatusCode:    map[int]int64{},

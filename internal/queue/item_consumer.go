@@ -11,10 +11,10 @@ type Consumer interface {
 
 type ItemConsumer struct {
 	queue         *ItemQueue
-	metricService metric.MetricService
+	metricService metric.MetricServicer
 }
 
-func NewItemConsumer(queue *ItemQueue, metricService metric.MetricService) ItemConsumer {
+func NewItemConsumer(queue *ItemQueue, metricService metric.MetricServicer) ItemConsumer {
 	return ItemConsumer{
 		queue:         queue,
 		metricService: metricService,
