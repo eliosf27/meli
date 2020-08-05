@@ -1,6 +1,6 @@
 # Items
 
-This project is a test made it to a mercadolibre interview
+This project is a test project
 
 This project was build keeping in mind the most important
 things about [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html), are these:
