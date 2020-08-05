@@ -1,4 +1,4 @@
-# Meli-Items
+# Items
 
 This project is a test made it to a mercadolibre interview
 
