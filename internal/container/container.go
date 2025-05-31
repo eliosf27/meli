@@ -9,22 +9,45 @@ import (
 	pg "meli/internal/postgres"
 	"meli/internal/queue"
 	rd "meli/internal/redis"
-	config "meli/pkg/config"
+	settings "meli/pkg/config" // Renamed to avoid conflict with our es.Config
+	es "meli/pkg/elasticsearch"
+	"log" // For the Elasticsearch client logger
+	"os"  // For the Elasticsearch client logger
 )
 
 type Dependencies struct {
-	StatusHandler      appStatus.StatusHandler
-	ItemHandler        appItem.ItemHandler
-	MetricHandler      appMetric.MetricHandler
-	ConfigCacheHandler appConfig.ConfigCacheHandler
-	Config             config.Config
-	Queue              *queue.ItemQueue
-	QueueConsumers     []queue.Consumer
+	StatusHandler       appStatus.StatusHandler
+	ItemHandler         appItem.ItemHandler
+	MetricHandler       appMetric.MetricHandler
+	ConfigCacheHandler  appConfig.ConfigCacheHandler
+	Config              settings.Config
+	Queue               *queue.ItemQueue
+	QueueConsumers      []queue.Consumer
+	ElasticsearchClient *es.Client // Added Elasticsearch client
 }
 
 // Build build all the project dependencies
 func Build() Dependencies {
-	configs := config.NewConfig()
+	configs := settings.NewConfig()
+
+	// Elasticsearch Client
+	esLogger := log.New(os.Stdout, "elasticsearch: ", log.LstdFlags)
+	esCfg := es.Config{
+		Addresses: configs.Elasticsearch.Addresses,
+		Username:  configs.Elasticsearch.Username,
+		Password:  configs.Elasticsearch.Password,
+	}
+	esClient, err := es.NewClient(esCfg, esLogger)
+	if err != nil {
+		// Decide on error handling: panic, log and exit, or return error
+		// For now, let's panic, similar to how config loading errors are handled.
+		panic("Failed to create Elasticsearch client: " + err.Error())
+	}
+	// TODO: Optionally, add a Ping here to verify connection on startup
+	// if err := esClient.Ping(); err != nil {
+	// 	panic("Failed to ping Elasticsearch: " + err.Error())
+	// }
+
 
 	// storage
 	postgres := pg.NewPostgres(configs)
@@ -62,6 +85,7 @@ func Build() Dependencies {
 	dependencies.Config = configs
 	dependencies.Queue = &itemQueue
 	dependencies.QueueConsumers = append(dependencies.QueueConsumers, itemConsumer)
+	dependencies.ElasticsearchClient = esClient // Added Elasticsearch client
 
 	return dependencies
 }

@@ -15,6 +15,13 @@ type (
 		BaseEndpoint   string `envconfig:"BASE_ENDPOINT" required:"true"`
 		Redis          RedisSpecification
 		Postgres       PostgresSpecification
+		Elasticsearch  ElasticsearchSpecification
+	}
+
+	ElasticsearchSpecification struct {
+		Addresses []string `envconfig:"ELASTICSEARCH_ADDRESSES" required:"true"` // Comma-separated list
+		Username  string   `envconfig:"ELASTICSEARCH_USERNAME"`
+		Password  string   `envconfig:"ELASTICSEARCH_PASSWORD"`
 	}
 
 	RedisSpecification struct {
